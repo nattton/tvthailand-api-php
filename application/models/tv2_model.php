@@ -2,11 +2,15 @@
 
 class Tv2_model extends CI_Model
 {
-	public $thumbnail_path = "https://s3-ap-southeast-1.amazonaws.com/tv-thumbnail/tv/";
+	public $thumbnail_path = "http://thumbnail.thetvthailand.com/tv/";
+	private $tv_thumbnail_path = 'http://thumbnail.thetvthailand.com/tv/';
+	private $category_thumbnail_path = 'http://thumbnail.thetvthailand.com/category/';
+	private $channel_thumbnail_path = 'http://thumbnail.thetvthailand.comchannel/';
+	
 	private $deviceSupport = array('ios', 'android', 'wp', 's40');
 
 	private $isTH = FALSE;
-	private $device = '';
+	private $device = ''; 
 	private $limit = 20;
 
 	function __construct()
@@ -52,9 +56,7 @@ class Tv2_model extends CI_Model
 		// $this->db->order_by('order');
 		// return $this->db->get()->result();
 
-		$category_thumbnail_path = "http://thumbnail.makathon.com/category/";
-
-		$sql = "SELECT id, title, description, CONCAT('$category_thumbnail_path', thumbnail) thumbnail 
+		$sql = "SELECT id, title, description, CONCAT('$this->category_thumbnail_path', thumbnail) thumbnail 
 		FROM tv_category 
 		WHERE online = 1 
 		ORDER BY `order`";
@@ -86,14 +88,33 @@ class Tv2_model extends CI_Model
 		// $this->db->order_by('order');
 		// return $this->db->get()->result();
 
-		$channel_thumbnail_path = "http://thumbnail.makathon.com/channel/";
-
-		$sql = "SELECT id, title, description, CONCAT('$channel_thumbnail_path', thumbnail) thumbnail 
+/*
+		$sql = "SELECT id, title, description, CONCAT('$this->channel_thumbnail_path', thumbnail) thumbnail 
 		FROM tv_channel
 		WHERE online = 1 
 		ORDER BY `order`";
 
 		return $this->db->query($sql)->result();
+		
+*/
+		
+		
+		if ($this->isDeviceSupport())
+		{
+			$sql = "SELECT id, title, description, CONCAT('$this->channel_thumbnail_path', thumbnail) thumbnail, url_$this->device url 
+			FROM tv_channel
+			WHERE online = 1 
+			ORDER BY `order`";
+			return $this->db->query($sql)->result();
+		}
+		else
+		{
+			$sql = "SELECT id, title, description, CONCAT('$this->channel_thumbnail_path', thumbnail) thumbnail, url
+			FROM tv_channel
+			WHERE online = 1 
+			ORDER BY `order`";
+			return $this->db->query($sql)->result();
+		}
 	}
 
 	function getLiveChannel() {
@@ -103,11 +124,13 @@ class Tv2_model extends CI_Model
 		// $this->db->order_by('order');
 		// return $this->db->get()->result();
 
+		return array();
+
 		$channel_thumbnail_path = "http://thumbnail.makathon.com/channel/";
 
 		if ($this->isDeviceSupport())
 		{
-			$sql = "SELECT id, title, description, CONCAT('$channel_thumbnail_path', thumbnail) thumbnail, url_$this->device url 
+			$sql = "SELECT id, title, description, CONCAT('$this->channel_thumbnail_path', thumbnail) thumbnail, url_$this->device url 
 			FROM tv_live_channel
 			WHERE online = 1 AND url_$this->device != ''
 			ORDER BY `order`";
@@ -115,7 +138,7 @@ class Tv2_model extends CI_Model
 		}
 		else
 		{
-			$sql = "SELECT id, title, description, CONCAT('$channel_thumbnail_path', thumbnail) thumbnail, url
+			$sql = "SELECT id, title, description, CONCAT('$this->channel_thumbnail_path', thumbnail) thumbnail, url
 			FROM tv_live_channel
 			WHERE online = 1 
 			ORDER BY `order`";
@@ -124,7 +147,7 @@ class Tv2_model extends CI_Model
 	}
 
 	function getAllProgram() {
-		$sql = "SELECT program_id id, program_title title, CONCAT('$this->thumbnail_path', program_thumbnail) thumbnail,  program_time description, rating
+		$sql = "SELECT program_id id, program_title title, CONCAT('$this->tv_thumbnail_path', program_thumbnail) thumbnail,  program_time description, rating
 		FROM tv_program 
 		WHERE online = 1";
 
@@ -142,7 +165,7 @@ class Tv2_model extends CI_Model
 	}
 
 	function getWhatsNewProgram($start = 0) {
-		$sql = "SELECT program_id id, program_title title, CONCAT('$this->thumbnail_path', program_thumbnail) thumbnail,  program_time description,  last_epname, rating
+		$sql = "SELECT program_id id, program_title title, CONCAT('$this->tv_thumbnail_path', program_thumbnail) thumbnail,  program_time description,  last_epname, rating
 		FROM tv_program 
 		WHERE online = 1";
 
@@ -161,7 +184,7 @@ class Tv2_model extends CI_Model
 	}
 
 	function getProgramByTopHits($start = 0) {
-		$sql = "SELECT program_id id, program_title title, CONCAT('$this->thumbnail_path', program_thumbnail) thumbnail ,  program_time description, rating
+		$sql = "SELECT program_id id, program_title title, CONCAT('$this->tv_thumbnail_path', program_thumbnail) thumbnail ,  program_time description, rating
 		FROM tv_program 
 		WHERE online = 1";
 
@@ -182,7 +205,7 @@ class Tv2_model extends CI_Model
 	function getProgramByCategory($id, $start = 0) {
 		$id = intval($id);
 
-		$sql = "SELECT program_id id, program_title title, CONCAT('$this->thumbnail_path', program_thumbnail) thumbnail ,  program_time description, rating
+		$sql = "SELECT program_id id, program_title title, CONCAT('$this->tv_thumbnail_path', program_thumbnail) thumbnail ,  program_time description, rating
 		FROM tv_program 
 		WHERE online = 1 AND category_id = $id";
 
@@ -203,7 +226,7 @@ class Tv2_model extends CI_Model
 	function getProgramByChannel($id, $start = 0) {
 		$id = intval($id);
 
-		$sql = "SELECT program_id id, program_title title, CONCAT('$this->thumbnail_path', program_thumbnail) thumbnail ,  program_time description, rating
+		$sql = "SELECT program_id id, program_title title, CONCAT('$this->tv_thumbnail_path', program_thumbnail) thumbnail ,  program_time description, rating
 		FROM tv_program 
 		WHERE online = 1 AND channel_id = $id";
 
@@ -222,7 +245,7 @@ class Tv2_model extends CI_Model
 	}
 
 	function getProgramByOwner($owner, $start = 0) {
-		$sql = "SELECT program_id id, program_title title, CONCAT('$this->thumbnail_path', program_thumbnail) thumbnail ,  program_time description, rating
+		$sql = "SELECT program_id id, program_title title, CONCAT('$this->tv_thumbnail_path', program_thumbnail) thumbnail ,  program_time description, rating
 		FROM tv_program 
 		WHERE online = 1 AND owner = '$owner'";
 
@@ -279,7 +302,7 @@ class Tv2_model extends CI_Model
 	function getProgramInfo($id)
 	{
 		$id = intval($id);
-		$sql = "SELECT tv_program.program_id id, tv_program.program_title title, CONCAT('$this->thumbnail_path',tv_program.program_thumbnail) thumbnail, tv_program.program_time description, tv_program.program_detail detail, SUM( tv_programlist.programlist_count ) viewCount, rating
+		$sql = "SELECT tv_program.program_id id, tv_program.program_title title, CONCAT('$this->tv_thumbnail_path',tv_program.program_thumbnail) thumbnail, tv_program.program_time description, tv_program.program_detail detail, SUM( tv_programlist.programlist_count ) viewCount, rating
 			FROM tv_program
 			INNER JOIN tv_programlist ON ( tv_program.program_id = tv_programlist.program_id ) 
 			WHERE tv_program.program_id = '$id'

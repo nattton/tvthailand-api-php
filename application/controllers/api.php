@@ -11,10 +11,9 @@ class Api extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-/* 		$this->load->model('Tv_model','', TRUE); */
 
  		$this->load->library('MemcacheSASL','','memcached');
- 		$this->memcached->addServer('makathoncache.gntesa.cfg.use1.cache.amazonaws.com', '11211');
+ 		$this->memcached->addServer('tvthailand.gntesa.cfg.use1.cache.amazonaws.com', '11211');
 
 		// Set Device
 
@@ -22,19 +21,13 @@ class Api extends CI_Controller {
 
 		// Location
 
-/*
-		if (array_key_exists('HTTP_CF_IPCOUNTRY', $_SERVER)) {
-			$this->country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
-			if($this->country_code == 'TH')
-			{
-				$this->ex_cache = 'TH';
-				$this->isTH = TRUE;
+		if (array_key_exists('GEOIP_COUNTRY_CODE', $_SERVER)) {
+			$this->country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
+			if($this->country_code == 'US') {
+				$this->country_cache = ':US';
+				$this->isTH = FALSE;
 			}
 		}
-*/
-
-		$this->ex_cache = ':TH';
-		$this->isTH = TRUE;
 	}
 
 	public function index()

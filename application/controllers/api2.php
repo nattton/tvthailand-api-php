@@ -5,15 +5,15 @@ class Api2 extends CI_Controller {
 	private $cache_time = 1800;
 	private $country_code = '';
 	private $country_cache = '';
-	private $isTH = FALSE;
+	private $isTH = TRUE;
 	private $device = '';
 
-	function __construct() {
+	function __construct()
+	{
 		parent::__construct();
 
  		$this->load->library('MemcacheSASL','','memcached');
-/*  		$this->memcached->addServer('localhost', '11211'); */
- 		$this->memcached->addServer('makathoncache.gntesa.cfg.use1.cache.amazonaws.com', '11211');
+ 		$this->memcached->addServer('tvthailand.gntesa.cfg.use1.cache.amazonaws.com', '11211');
 		
 		// Set Device
 
@@ -21,19 +21,14 @@ class Api2 extends CI_Controller {
 
 		// Location
 
-/*
-		if (array_key_exists('HTTP_CF_IPCOUNTRY', $_SERVER)) {
-			$this->country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
-			if($this->country_code == 'TH')
-			{
-				$this->country_cache = ':TH';
-				$this->isTH = TRUE;
+		if (array_key_exists('GEOIP_COUNTRY_CODE', $_SERVER)) {
+			$this->country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
+			if($this->country_code == 'US') {
+				$this->country_cache = ':US';
+				$this->isTH = FALSE;
 			}
 		}
-*/
 		
-		$this->country_cache = '_TH';
-		$this->isTH = TRUE;
 	}
 
 	public function index()
@@ -329,7 +324,7 @@ class Api2 extends CI_Controller {
 		}
 	}
 
-	public function liveChannel()
+	public function live()
 	{	
 		$cache_key = "$this->namespace_prefix:liveChannels:$this->device";
 		$memData = $this->memcached->get($cache_key);

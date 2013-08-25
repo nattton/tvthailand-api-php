@@ -6,7 +6,7 @@ class Home extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->library('MemcacheSASL','','memcached');
- 		$this->memcached->addServer('makathoncache.gntesa.cfg.use1.cache.amazonaws.com', '11211');
+ 		$this->memcached->addServer('tvthailand.gntesa.cfg.use1.cache.amazonaws.com', '11211');
  		
 		$this->load->model('Tv_model','', TRUE);
 	}
@@ -34,6 +34,11 @@ class Home extends CI_Controller {
 			$output = $this->output->get_output();
 			$this->memcached->add($cache_key, $output, 21600);
 		}
+	}
+	
+	public function geoip()
+	{
+		echo $_SERVER['GEOIP_COUNTRY_CODE'].' - '.$_SERVER['GEOIP_COUNTRY_NAME'];
 	}
 	
 	public function info()

@@ -2,7 +2,7 @@
 
 class Tv_model extends CI_Model
 {
-	public $thumbnail_path = 'https://s3-ap-southeast-1.amazonaws.com/tv-thumbnail/tv/';
+	public $thumbnail_path = 'http://thumbnail.thetvthailand.com/tv/';
 	private $deviceSupport = array('ios', 'android', 'wp');
 
 	private $isTH = FALSE;
