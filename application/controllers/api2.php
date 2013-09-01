@@ -2,7 +2,7 @@
 
 class Api2 extends CI_Controller {
 	private $namespace_prefix = 'API2:';
-	private $cache_time = 1800;
+	private $cache_time = 60;
 	private $country_code = '';
 	private $country_cache = '';
 	private $isTH = TRUE;
@@ -252,7 +252,6 @@ class Api2 extends CI_Controller {
 
 			$data['json']->categories = $this->Tv2_model->getCategory();
 			$data['json']->channels = $this->Tv2_model->getChannel();
-			$data['json']->liveChannels = $this->Tv2_model->getLiveChannel();
 
 			$memData = $this->load->view('json', $data, TRUE);
 
@@ -302,50 +301,21 @@ class Api2 extends CI_Controller {
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
-
-	public function owner($id = -1, $start = 0)
+	
+	public function search($start = 0)
 	{	
-		$cache_key = "$this->namespace_prefix:owner:$id:$start:$this->device";
+		$keyword = $this->input->get('keyword');
+		$cache_key = "$this->namespace_prefix:search:$keyword:$start:$this->device";
 		$memData = $this->memcached->get($cache_key);
-		if(FALSE != $memData)
-		{
+		if(FALSE != $memData) {
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
-		else
-		{
-			if (-1 == $id) {
-				$memData = $this->_getOwner();
-			}
-			else {
-				$memData = $this->_getProgramByOwner($id, $start);
-			}
+		else {
+			$memData = $this->_getProgramBySearch($keyword, $start);
 			$this->memcached->add($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
-
-	public function live()
-	{	
-		$cache_key = "$this->namespace_prefix:liveChannels:$this->device";
-		$memData = $this->memcached->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
-		{
-			$this->load->model('Tv2_model','', TRUE);
-			$this->Tv2_model->setDevice($this->device);
-			$this->Tv2_model->setIsTH($this->isTH);
-
-			$data['json']->liveChannels = $this->Tv2_model->getLiveChannel();
-
-			$memData = $this->load->view('json', $data, TRUE);
-			$this->memcached->add($cache_key, $memData, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-	}
-
 
 	public function all_program()
 	{
@@ -431,15 +401,6 @@ class Api2 extends CI_Controller {
 		return $this->load->view('json', $data, TRUE);
 	}
 
-	private function _getOwner() {
-		
-		$this->load->model('Tv2_model','', TRUE);
-		$this->Tv2_model->setDevice($this->device);
-		$this->Tv2_model->setIsTH($this->isTH);
-		$data['json']->owners = $this->Tv2_model->getOwner();
-		return $this->load->view('json', $data, TRUE);
-	}
-
 	private function _getChannel() {
 		
 		$this->load->model('Tv2_model','', TRUE);
@@ -466,13 +427,15 @@ class Api2 extends CI_Controller {
 		$data['json']->programs = $this->Tv2_model->getProgramByChannel($id, $start);
 		return $this->load->view('json', $data, TRUE);
 	}
-
-	private function _getProgramByOwner($id, $start = 0) {
+	
+	private function _getProgramBySearch($keyword, $start = 0) {
+		$keyword = $this->input->get('keyword');
+	
 		$this->load->model('Tv2_model','', TRUE);
 		$this->Tv2_model->setDevice($this->device);
 		$this->Tv2_model->setIsTH($this->isTH);
 
-		$data['json']->programs = $this->Tv2_model->getProgramByOwner($id, $start);
+		$data['json']->programs = $this->Tv2_model->getProgramSearch($keyword, $start);
 		return $this->load->view('json', $data, TRUE);
 	}
 
@@ -488,6 +451,10 @@ class Api2 extends CI_Controller {
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
 			$this->Tv2_model->setIsTH($this->isTH);
+			$data['json']->code = 200;
+			if($start == 0) {
+				$data['json']->info = $this->Tv2_model->getProgramInfo($id);
+			}
 			$data['json']->episodes = $this->Tv2_model->getEpisode($id, $start);
 			$json = $this->load->view('json',$data,TRUE);
 			$this->memcached->add($cache_key, $json, $this->cache_time);

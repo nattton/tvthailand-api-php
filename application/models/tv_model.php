@@ -2,7 +2,7 @@
 
 class Tv_model extends CI_Model
 {
-	public $thumbnail_path = 'http://thumbnail.thetvthailand.com/tv/';
+	public $thumbnail_path = 'http://thumbnail.instardara.com/tv/';
 	private $deviceSupport = array('ios', 'android', 'wp');
 
 	private $isTH = FALSE;

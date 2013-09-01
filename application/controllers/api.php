@@ -5,7 +5,7 @@ class Api extends CI_Controller {
 	private $cache_time = 21600;
 	private $country_code = '';
 	private $ex_cache = '';
-	private $isTH = FALSE;
+	private $isTH = TRUE;
 	private $device = '';
 
 	function __construct()
