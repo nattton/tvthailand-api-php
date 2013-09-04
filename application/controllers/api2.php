@@ -2,7 +2,7 @@
 
 class Api2 extends CI_Controller {
 	private $namespace_prefix = 'API2:';
-	private $cache_time = 60;
+	private $cache_time = 21600;
 	private $country_code = '';
 	private $country_cache = '';
 	private $isTH = TRUE;
@@ -128,97 +128,8 @@ class Api2 extends CI_Controller {
 		}
 	}
 	
-	public function message_ios()
-	{
-		$cache_key = $this->namespace_prefix.'message_ios';
-		$memData = $this->memcached->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
-		{	
-			$data['json']->id = '201302200200';
-			$data['json']->title = '*Notice*';
-			$data['json']->message = 'Welcome to TV Thailand for iOS';
-			
-			$this->load->model('Tv2_model','', FALSE);
-			$buttons = array();
-/* 			array_push($buttons, $this->Tv2_model->createButton('Read Review','http://goo.gl/Vdoba')); */
-			array_push($buttons, $this->Tv2_model->createButton('Rating & Review','https://itunes.apple.com/us/app/tv-thailand/id458429827?ls=1&mt=8'));
-			array_push($buttons, $this->Tv2_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
-			
-			$data['json']->buttons = $buttons;
-			$json = $this->load->view('json', $data, TRUE);
-			$this->memcached->add($cache_key, $json, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($json);
-		}
-	}
-	
-	public function message_android()
-	{
-		$cache_key = $this->namespace_prefix.'message_android';
-		$memData = $this->memcached->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
-		{
-			$data['json']->id = '201302800200';
-			$data['json']->title = '* Notice *';
-			$data['json']->message = 'Welcome to TV Thailand for Android';
-			$obj = new stdClass();
-			$obj->versionCode = 62;
-			$obj->apk = 'http://goo.gl/8tfx1';
-			$data['json']->app_version = $obj;
-			
-			$this->load->model('Tv2_model','', FALSE);
-			$buttons = array();
- 			array_push($buttons, $this->Tv2_model->createButton('Rating & Review','http://goo.gl/1BJYa')); 
-/* 			array_push($buttons, $this->Tv2_model->createButton('Read','http://goo.gl/NeDgB')); */
-			array_push($buttons, $this->Tv2_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
-			
-			$data['json']->buttons = $buttons;
-
-			$json = $this->load->view('json', $data, TRUE);
-			$this->memcached->add($cache_key, $json, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($json);
-		}
-	}
-	
-	public function message_wp()
-	{
-		$cache_key = $this->namespace_prefix.'message_wp';
-		$memData = $this->memcached->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
-		{
-			$data['json']->id = '201302200200';
-			$data['json']->title = '* Notice *';
-			$data['json']->message = 'Welcome to TV Thailand for Windows Phone';;
-			
-			$this->load->model('Tv2_model','', FALSE);
-			$buttons = array();
-/*  			array_push($buttons, $this->Tv2_model->createButton('Rating & Review','http://goo.gl/1BJYa'));  */
-/* 			array_push($buttons, $this->Tv2_model->createButton('Read','http://goo.gl/NeDgB')); */
-			array_push($buttons, $this->Tv2_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
-			
-			$data['json']->buttons = $buttons;
-
-			$json = $this->load->view('json', $data, TRUE);
-			$this->memcached->add($cache_key, $json, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($json);
-		}
-	}
-	
-	public function advertise()
-	{
-		$cache_key = $this->namespace_prefix.'advertise_'.$this->device.$this->country_cache;
-
+	public function message() {
+		$cache_key = "$this->namespace_prefix:message:$this->device";
 		$memData = $this->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
@@ -228,7 +139,46 @@ class Api2 extends CI_Controller {
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
-			$data['json']->delayStart = 5000;
+			$result = $this->Tv2_model->getMessage();
+			
+			$data['json']->id = $result->id;
+			$data['json']->title = $result->title;
+			$data['json']->message = $result->message;
+	
+			$buttons = array();
+			if($this->device == 'android') {
+				array_push($buttons, $this->Tv2_model->createButton('Rating & Review','http://goo.gl/1BJYa'));
+				array_push($buttons, $this->Tv2_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
+			}
+			elseif($this->device == 'ios') {
+				array_push($buttons, $this->Tv2_model->createButton('Rating & Review','https://itunes.apple.com/us/app/tv-thailand/id458429827?ls=1&mt=8'));
+				array_push($buttons, $this->Tv2_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
+			}
+			elseif($this->device == 'wp') {
+				array_push($buttons, $this->Tv2_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));		
+			}
+			
+			$data['json']->buttons = $buttons;
+			$json = $this->load->view('json', $data, TRUE);
+			$this->memcached->add($cache_key, $json, $this->cache_time);
+			$this->output->set_content_type('application/json')->set_output($json);
+		}
+		
+	}
+	
+	public function advertise()
+	{
+		$cache_key = "$this->namespace_prefix:advertise:$this->device";
+		$memData = $this->memcached->get($cache_key);
+		if(FALSE != $memData)
+		{
+			$this->output->set_content_type('application/json')->set_output($memData);
+		}
+		else
+		{
+			$this->load->model('Tv2_model','', TRUE);
+			$this->Tv2_model->setDevice($this->device);
+			$data['json']->delay_start = 5000;
 			$data['json']->ads = $this->Tv2_model->getAdvertise();
 
 			$json = $this->load->view('json', $data, TRUE);
@@ -337,7 +287,7 @@ class Api2 extends CI_Controller {
 
 			$this->memcached->add($cache_key, $memData, $this->cache_time);
 
-			$this->storeKey($this->getWhatsNewKey(), $cache_key);
+/* 			$this->storeKey($this->getWhatsNewKey(), $cache_key); */
 
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
@@ -523,16 +473,20 @@ class Api2 extends CI_Controller {
 		
 	}
 
+	public function view_episode($id)
+	{
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->viewEP($id);
+		
+		## TEST ##
 
+/*
+		$this->load->helper('url');
+		$url = 'http://27.131.144.6:8088/tv/index.html';
+		redirect($url, 'location', 301);
+*/
 
-
-
-
-
-
-
-
-
+	}
 
 
 
@@ -616,21 +570,6 @@ class Api2 extends CI_Controller {
 
 		$data['json']->programlist = $this->Tv2_model->getProgramlistDetail($programlist_id);
 		$this->load->view('json',$data);
-	}
-	
-	
-
-	public function viewProgramlist($programlist_id)
-	{
-		$this->load->model('Tv2_model','', TRUE);
-		$this->Tv2_model->viewProgramlist($programlist_id);
-		
-		## TEST ##
-
-		$this->load->helper('url');
-		$url = 'http://27.131.144.6:8088/tv/index.html';
-		redirect($url, 'location', 301);
-
 	}
 	
 	public function iosToken($deviceid,$devicetoken)

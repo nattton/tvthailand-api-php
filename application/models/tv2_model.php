@@ -41,10 +41,29 @@ class Tv2_model extends CI_Model
 		$obj->url = $url;
 		return $obj;
 	}
+	
+	function getMessage() {
+
+		if ($this->isDeviceSupport()) {
+			$sql = "SELECT create_date id, title, message FROM tv_message WHERE active = 1 AND device = '$this->device' ORDER BY create_date LIMIT 0,1";
+			$query = $this->db->query($sql);
+			if ($query->num_rows() > 0) {
+				$row = $query->first_row();
+				return $row;
+			}
+		}
+		
+		$obj = new stdClass();
+		$obj->id = '1';
+		$obj->message = 'Hi,';
+		$obj->message = 'Welcome to TV Thailand';
+
+		return $obj;
+	}
 
 	function getAdvertise() {
 /* 		$this->db->select("ad_name name, CONCAT( ad_url, CONCAT(  '?ref=tvthailand&time=', UNIX_TIMESTAMP() ) ) url, ad_time 'time'"); */
-		$this->db->select("ad_name name, ad_url url, ad_time 'time'");
+		$this->db->select("ad_name name, ad_url url, ad_time 'time', interval");
 		$this->db->from('ads');
 		$this->db->where('active',1);
 		return $this->db->get()->result();

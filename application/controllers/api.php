@@ -37,6 +37,8 @@ class Api extends CI_Controller {
 
 
 	private function getCategoryKey($id) {
+		if($id == 0) return "API:WHATSNEW";
+		
 		return "API:CATEGORY:$id";
 	}
 
@@ -361,7 +363,7 @@ class Api extends CI_Controller {
 
 			$this->memcached->add($cache_key, $json, $this->cache_time);
 
-			$this->storeKey($this->getCategoryKey($cat_id), $cache_key);
+			if($cat_id == 0) $this->storeKey($this->getCategoryKey($cat_id), $cache_key);
 
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
@@ -369,7 +371,7 @@ class Api extends CI_Controller {
 /* 		$this->load->view('json',$data); */
 	}
 
-		public function getProgramLao($cat_id = 0, $start = 0)
+	public function getProgramLao($cat_id = 0, $start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "getProgramLao", $cat_id, $start, $this->device, $this->ex_cache);
 		$memData = $this->memcached->get($cache_key);
@@ -534,9 +536,11 @@ class Api extends CI_Controller {
 		
 		## TEST ##
 
+/*
 		$this->load->helper('url');
 		$url = 'http://27.131.144.6:8088/tv/index.html';
 		redirect($url, 'location', 301);
+*/
 
 	}
 	
@@ -604,6 +608,11 @@ class Api extends CI_Controller {
 			// redirect("/api2/clearCache/$program_id", 'refresh');
 		}
 		
+	}
+	
+	public function testtest() {
+		if(0 == '0') echo "0 == '0'";
+		else echo "0 != '0'";
 	}
 	
 	public function encryptData()
