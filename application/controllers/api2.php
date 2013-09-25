@@ -5,7 +5,7 @@ class Api2 extends CI_Controller {
 	private $cache_time = 21600;
 	private $country_code = '';
 	private $country_cache = '';
-	private $isTH = TRUE;
+	private $isTH = FALSE;
 	private $device = '';
 
 	function __construct()
@@ -23,12 +23,11 @@ class Api2 extends CI_Controller {
 
 		if (array_key_exists('GEOIP_COUNTRY_CODE', $_SERVER)) {
 			$this->country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
-			if($this->country_code == 'US') {
-				$this->country_cache = ':US';
-				$this->isTH = FALSE;
+			if($this->country_code == 'TH') {
+				$this->country_cache = 'TH';
+				$this->isTH = TRUE;
 			}
-		}
-		
+		}		
 	}
 
 	public function index()
@@ -188,7 +187,7 @@ class Api2 extends CI_Controller {
 	}
 
 	public function section() {
-		$cache_key = "$this->namespace_prefix:section:$this->device";
+		$cache_key = "$this->namespace_prefix:section:$this->device:$this->country_cache";
 		$memData = $this->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
@@ -212,7 +211,7 @@ class Api2 extends CI_Controller {
 
 	public function category($id = -1, $start = 0)
 	{	
-		$cache_key = "$this->namespace_prefix:category:$id:$start:$this->device";
+		$cache_key = "$this->namespace_prefix:category:$id:$start:$this->device:$this->country_cache";
 		$memData = $this->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
@@ -233,7 +232,7 @@ class Api2 extends CI_Controller {
 
 	public function channel($id = -1, $start = 0)
 	{	
-		$cache_key = "$this->namespace_prefix:channel:$id:$start:$this->device";
+		$cache_key = "$this->namespace_prefix:channel:$id:$start:$this->device:$this->country_cache";
 		$memData = $this->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
@@ -255,7 +254,7 @@ class Api2 extends CI_Controller {
 	public function search($start = 0)
 	{	
 		$keyword = $this->input->get('keyword');
-		$cache_key = "$this->namespace_prefix:search:$keyword:$start:$this->device";
+		$cache_key = "$this->namespace_prefix:search:$keyword:$start:$this->device:$this->country_cache";
 		$memData = $this->memcached->get($cache_key);
 		if(FALSE != $memData) {
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -390,7 +389,7 @@ class Api2 extends CI_Controller {
 	}
 
 	public function episode($id, $start = 0) {
-		$cache_key = "$this->namespace_prefix:episode:$id:$start:$this->country_cache:$this->device";
+		$cache_key = "$this->namespace_prefix:episode:$id:$start:$this->device:$this->country_cache";
 		$memData = $this->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{

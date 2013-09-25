@@ -78,8 +78,13 @@ class Tv2_model extends CI_Model
 
 		$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', thumbnail) END AS thumbnail
 		FROM tv_category 
-		WHERE online = 1 
-		ORDER BY `order`";
+		WHERE online = 1";
+		
+		if(!$this->isTH) {
+			$sql .= " AND th_restrict = 0";
+		}
+		
+		$sql .= " ORDER BY `order`, title";
 
 		return $this->db->query($sql)->result();
 	}
@@ -107,7 +112,7 @@ class Tv2_model extends CI_Model
 			$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->channel_thumbnail_path', thumbnail) END AS thumbnail, url_$this->device url 
 			FROM tv_channel
 			WHERE online = 1 
-			ORDER BY `order`";
+			ORDER BY `order`, title";
 			return $this->db->query($sql)->result();
 		}
 		else
@@ -115,7 +120,7 @@ class Tv2_model extends CI_Model
 			$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->channel_thumbnail_path', thumbnail) END AS thumbnail, url
 			FROM tv_channel
 			WHERE online = 1 
-			ORDER BY `order`";
+			ORDER BY `order`, title";
 			return $this->db->query($sql)->result();
 		}
 	}
@@ -239,22 +244,28 @@ class Tv2_model extends CI_Model
 	
 	function getProgramSearch($keyword = '',$start = 0)
 	{
-		$limit = "LIMIT ".intval($start)." , $this->limit";
+		$limit = "LIMIT ".intval($start)." , 40";
+		
+		$special = 'tv_program.online = 1 AND';
+		if(strpos($keyword, '@') === 0) {
+			$special = '';
+			$keyword = substr($keyword, 1);
+		}
+		
 		if($this->isTH)
 		{
 			$sql = "SELECT tv_program.program_id id, tv_program.program_title title, CASE tv_program.program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', tv_program.program_thumbnail) END AS thumbnail, tv_program.program_time description,
 		CASE SUBSTRING(CONVERT(tv_program.program_title USING utf8), 1, 1)  WHEN SUBSTRING(CONVERT('$keyword' USING utf8), 1, 1) THEN 1 ELSE 0 END AS occur 
-		FROM tv_program WHERE tv_program.program_title LIKE '%$keyword%' 
+		FROM tv_program WHERE $special tv_program.program_title LIKE '%$keyword%' 
 		ORDER BY occur DESC, tv_program.program_title ASC $limit";
 		}
 		else
 		{
 			$sql = "SELECT tv_program.program_id id, tv_program.program_title title, CASE tv_program.program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', tv_program.program_thumbnail) END AS thumbnail, tv_program.program_time time,
 		CASE SUBSTRING(CONVERT(tv_program.program_title USING utf8), 1, 1)  WHEN SUBSTRING(CONVERT('$keyword' USING utf8), 1, 1) THEN 1 ELSE 0 END AS occur 
-		FROM tv_program WHERE tv_program.program_title LIKE '%$keyword%' AND tv_program.th_restrict = 0
+		FROM tv_program WHERE $special tv_program.program_title LIKE '%$keyword%' AND tv_program.th_restrict = 0
 		ORDER BY occur DESC, tv_program.program_title ASC $limit";
 		}
-
 		
 		return $this->db->query($sql)->result();
 	}

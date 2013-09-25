@@ -5,7 +5,7 @@ class Api extends CI_Controller {
 	private $cache_time = 21600;
 	private $country_code = '';
 	private $ex_cache = '';
-	private $isTH = TRUE;
+	private $isTH = FALSE;
 	private $device = '';
 
 	function __construct()
@@ -23,9 +23,9 @@ class Api extends CI_Controller {
 
 		if (array_key_exists('GEOIP_COUNTRY_CODE', $_SERVER)) {
 			$this->country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
-			if($this->country_code == 'US') {
-				$this->country_cache = ':US';
-				$this->isTH = FALSE;
+			if($this->country_code == 'TH') {
+				$this->country_cache = ':TH';
+				$this->isTH = TRUE;
 			}
 		}
 	}
