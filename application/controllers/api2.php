@@ -177,7 +177,7 @@ class Api2 extends CI_Controller {
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
-			$data['json']->delay_start = 5000;
+			$data['json']->delay_start = 1000;
 			$data['json']->ads = $this->Tv2_model->getAdvertise();
 
 			$json = $this->load->view('json', $data, TRUE);
@@ -210,7 +210,7 @@ class Api2 extends CI_Controller {
 	}
 
 	public function category($id = -1, $start = 0)
-	{	
+	{
 		$cache_key = "$this->namespace_prefix:category:$id:$start:$this->device:$this->country_cache";
 		$memData = $this->memcached->get($cache_key);
 		if(FALSE != $memData)
@@ -221,6 +221,9 @@ class Api2 extends CI_Controller {
 		{
 			if (-1 == $id) {
 				$memData = $this->_getCategory();
+			}
+			else if ('tophits' == $id) {
+				$memData = $this->_getProgramTopHits($start);
 			}
 			else {
 				$memData = $this->_getProgramByCategory($id, $start);
@@ -328,14 +331,7 @@ class Api2 extends CI_Controller {
 		}
 		else
 		{
-			$this->load->model('Tv2_model','', TRUE);
-			$this->Tv2_model->setDevice($this->device);
-			$this->Tv2_model->setIsTH($this->isTH);
-
-			$data['json']->programs = $this->Tv2_model->getProgramByTopHits($start);
-
-			$memData = $this->load->view('json', $data, TRUE);
-
+			$memData = $this->_getProgramTopHits($start);
 			$this->memcached->add($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
@@ -346,6 +342,7 @@ class Api2 extends CI_Controller {
 		$this->load->model('Tv2_model','', TRUE);
 		$this->Tv2_model->setDevice($this->device);
 		$this->Tv2_model->setIsTH($this->isTH);
+		
 		$data['json']->categories = $this->Tv2_model->getCategory();
 		return $this->load->view('json', $data, TRUE);
 	}
@@ -356,6 +353,16 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setDevice($this->device);
 		$this->Tv2_model->setIsTH($this->isTH);
 		$data['json']->categories = $this->Tv2_model->getChannel();
+		return $this->load->view('json', $data, TRUE);
+	}
+	
+	private function _getProgramTopHits($start = 0) {
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setDevice($this->device);
+		$this->Tv2_model->setIsTH($this->isTH);
+
+		$data['json']->programs = $this->Tv2_model->getProgramByTopHits($start);
+
 		return $this->load->view('json', $data, TRUE);
 	}
 

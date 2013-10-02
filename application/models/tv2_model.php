@@ -62,19 +62,27 @@ class Tv2_model extends CI_Model
 	}
 
 	function getAdvertise() {
-/* 		$this->db->select("ad_name name, CONCAT( ad_url, CONCAT(  '?ref=tvthailand&time=', UNIX_TIMESTAMP() ) ) url, ad_time 'time'"); */
-		$this->db->select("ad_name name, ad_url url, ad_time 'time', interval");
+		if ($this->isDeviceSupport()) {
+			$this->db->select("ad_name name, ad_url_$this->device url, ad_time_$this->device 'time', interval");
+		}
+		else {
+			$this->db->select("ad_name name, ad_url url, ad_time 'time', interval");
+		}
 		$this->db->from('ads');
 		$this->db->where('active',1);
 		return $this->db->get()->result();
 	}
 	
 	function getCategory() {
-		// $this->db->select('id, title, description, thumbnail');
-		// $this->db->from('category');
-		// $this->db->where('online',1);
-		// $this->db->order_by('order');
-		// return $this->db->get()->result();
+		$catList = array();
+		
+		$obj = new stdClass();
+		$obj->id = 'tophits';
+		$obj->title = 'Top Hits';
+		$obj->description = 'Top Hits';
+		$obj->thumbnail = 'http://thumbnail.instardara.com/category/ic_cate_empty.png';
+
+		array_push($catList, $obj);
 
 		$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', thumbnail) END AS thumbnail
 		FROM tv_category 
@@ -85,8 +93,13 @@ class Tv2_model extends CI_Model
 		}
 		
 		$sql .= " ORDER BY `order`, title";
+				
+		$cats = $this->db->query($sql)->result();
+		foreach($cats as $cat) {
+			array_push($catList, $cat);			
+		}
 
-		return $this->db->query($sql)->result();
+		return $catList;
 	}
 
 	function getChannel() {
@@ -188,7 +201,7 @@ class Tv2_model extends CI_Model
 
 		$sql .= " ORDER BY `view_count` DESC";
 		$sql .= " LIMIT ".intval($start)." , $this->limit";
-
+		
 		return $this->db->query($sql)->result();
 	}
 	

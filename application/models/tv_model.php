@@ -38,7 +38,10 @@ class Tv_model extends CI_Model
 	{
 		$this->db->select('category_id, category_name');
 		$this->db->from('category_v1');
-		$this->db->where('online',1);
+		$this->db->where('online', 1);
+		if(!$this->isTH) {
+			$this->db->where('th_restrict', 0);
+		}
 		$this->db->order_by('category_order');
 		return $this->db->get()->result();
 	}
@@ -91,15 +94,12 @@ class Tv_model extends CI_Model
 	}
 	
 	function getAds()
-	{
-		// $this->db->select("ad_name name, CONCAT( ad_url, CONCAT(  '?ref=tvthailand&time=', UNIX_TIMESTAMP() ) ) url, ad_time 'time'");
-		if ($this->isDeviceSupport())
-		{
-			$this->db->select("ad_name name, CONCAT( ad_url, CONCAT(  '?ref=tvthailand&time=', UNIX_TIMESTAMP() ) ) url, ad_time_".$this->device." 'time'");
+	{	
+		if ($this->isDeviceSupport()) {
+			$this->db->select("ad_name name, ad_url_$this->device url, ad_time_$this->device 'time', interval");
 		}
-		else
-		{
-			$this->db->select("ad_name name, CONCAT( ad_url, CONCAT(  '?ref=tvthailand&time=', UNIX_TIMESTAMP() ) ) url, ad_time 'time'");
+		else {
+			$this->db->select("ad_name name, ad_url url, ad_time 'time', interval");
 		}
 
 		$this->db->from('ads');

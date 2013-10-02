@@ -24,7 +24,7 @@ class Api extends CI_Controller {
 		if (array_key_exists('GEOIP_COUNTRY_CODE', $_SERVER)) {
 			$this->country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
 			if($this->country_code == 'TH') {
-				$this->country_cache = ':TH';
+				$this->country_cache = 'TH';
 				$this->isTH = TRUE;
 			}
 		}
@@ -209,7 +209,7 @@ class Api extends CI_Controller {
 		{
 			$this->load->model('Tv_model','', TRUE);
 			$this->Tv_model->setDevice($this->device);
-			$data['json']->delayStart = 5000;
+			$data['json']->delayStart = 1000;
 			$data['json']->ads = $this->Tv_model->getAds();
 
 			$pageAds = new stdClass();
@@ -237,7 +237,7 @@ class Api extends CI_Controller {
 	public function getCategory()
 	{	
 		// $cache_key = "$this->namespace_prefix:getCategory";
-		$cache_key = sprintf("%s:%s", $this->namespace_prefix, "getCategory");
+		$cache_key = sprintf("%s:%s:%s", $this->namespace_prefix, "getCategory", $this->country_cache);
 		$memData = $this->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
@@ -246,6 +246,7 @@ class Api extends CI_Controller {
 		else
 		{
 			$this->load->model('Tv_model','', TRUE);
+			$this->Tv_model->setIsTH($this->isTH);
 			$data['json']->ads = $this->Tv_model->getAds();
 			$data['json']->categories = $this->Tv_model->getCategory();
 			$json = $this->load->view('json', $data, TRUE);
