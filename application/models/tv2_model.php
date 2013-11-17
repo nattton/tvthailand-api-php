@@ -11,6 +11,7 @@ class Tv2_model extends CI_Model
 	private $deviceSupport = array('ios', 'android', 'wp', 's40');
 
 	private $isTH = FALSE;
+	private $legalrights = FALSE;
 	private $device = ''; 
 	private $limit = 20;
 
@@ -32,6 +33,10 @@ class Tv2_model extends CI_Model
 
 	function isDeviceSupport() {
 		return in_array($this->device, $this->deviceSupport);
+	}
+	
+	function setLegalRights($lr){
+		$this->legalrights = ($lr == 1);
 	}
 	
 	function createButton($label ='', $url='') {
@@ -88,7 +93,7 @@ class Tv2_model extends CI_Model
 		FROM tv_category 
 		WHERE online = 1";
 		
-		if(!$this->isTH) {
+		if(!$this->isTH || $this->legalrights) {
 			$sql .= " AND th_restrict = 0";
 		}
 		
@@ -103,22 +108,6 @@ class Tv2_model extends CI_Model
 	}
 
 	function getChannel() {
-		// $this->db->select('id, title, description, thumbnail');
-		// $this->db->from('channel');
-		// $this->db->where('online',1);
-		// $this->db->order_by('order');
-		// return $this->db->get()->result();
-
-/*
-		$sql = "SELECT id, title, description, CONCAT('$this->channel_thumbnail_path', thumbnail) thumbnail 
-		FROM tv_channel
-		WHERE online = 1 
-		ORDER BY `order`";
-
-		return $this->db->query($sql)->result();
-		
-*/
-		
 		
 		if ($this->isDeviceSupport())
 		{
@@ -154,6 +143,10 @@ class Tv2_model extends CI_Model
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
 		}
+		
+		if($this->legalrights) {
+			$sql .= " AND is_illegal = 0";
+		}
 
 		$sql .= " ORDER BY `title` ASC";
 
@@ -174,6 +167,10 @@ class Tv2_model extends CI_Model
 
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
+		}
+		
+		if($this->legalrights) {
+			$sql .= " AND is_illegal = 0";
 		}
 
 		$sql .= " ORDER BY `update_date` DESC";
@@ -197,6 +194,10 @@ class Tv2_model extends CI_Model
 
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
+		}
+		
+		if($this->legalrights) {
+			$sql .= " AND is_illegal = 0";
 		}
 
 		$sql .= " ORDER BY `view_count` DESC";
@@ -223,6 +224,10 @@ class Tv2_model extends CI_Model
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
 		}
+		
+		if($this->legalrights) {
+			$sql .= " AND is_illegal = 0";
+		}
 
 		$sql .= " ORDER BY `update_date` DESC";
 		$sql .= " LIMIT ".intval($start)." , $this->limit";
@@ -247,6 +252,10 @@ class Tv2_model extends CI_Model
 
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
+		}
+		
+		if($this->legalrights) {
+			$sql .= " AND is_illegal = 0";
 		}
 
 		$sql .= " ORDER BY `update_date` DESC";
