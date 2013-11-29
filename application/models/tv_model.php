@@ -96,10 +96,14 @@ class Tv_model extends CI_Model
 	function getAds()
 	{	
 		if ($this->isDeviceSupport()) {
-			$this->db->select("ad_name name, ad_url_$this->device url, ad_time_$this->device 'time', interval");
+			$this->db->select("ad_name name, ad_url_$this->device url, ad_time_$this->device 'time', `interval`");
+			$this->db->where("ad_time_$this->device >", 0);
+			$this->db->where("ad_url_$this->device !=", "");
 		}
 		else {
-			$this->db->select("ad_name name, ad_url url, ad_time 'time', interval");
+			$this->db->select("ad_name name, ad_url url, ad_time 'time', `interval`");
+			$this->db->where("ad_time >", 0);
+			$this->db->where("ad_url !=", "");
 		}
 
 		$this->db->from('ads');
