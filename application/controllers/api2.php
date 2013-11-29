@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Api2 extends CI_Controller {
-	private $namespace_prefix = 'API2:';
+	private $namespace_prefix = 'API2';
 	private $cache_time = 21600;
 	private $country_code = '';
 	private $country_cache = '';
