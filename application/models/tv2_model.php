@@ -117,8 +117,13 @@ class Tv2_model extends CI_Model
 		{
 			$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->channel_thumbnail_path', thumbnail) END AS thumbnail, url_$this->device url 
 			FROM tv_channel
-			WHERE online = 1 
-			ORDER BY `order`, title";
+			WHERE online = 1 ";
+			if ($this->device == "wp" || $this->device == "s40")
+			{
+				$sql .= " AND has_show = 1 ";
+			}
+			$sql .= " ORDER BY `order`, title";
+
 			return $this->db->query($sql)->result();
 		}
 		else
