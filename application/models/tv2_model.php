@@ -89,11 +89,25 @@ class Tv2_model extends CI_Model
 		$obj->id = 'tophits';
 		$obj->title = 'Top Hits';
 		$obj->description = 'Top Hits';
-		$obj->thumbnail = 'http://thumbnail.instardara.com/category/ic_cate_empty.png';
+		if ($this->device == "s40")
+		{
+			$obj->thumbnail = 'http://thumbnail.instardara.com/category/s40_ic_cate_empty.png';
+		}
+		else
+		{
+			$obj->thumbnail = 'http://thumbnail.instardara.com/category/ic_cate_empty.png';
+		}
 
 		array_push($catList, $obj);
+		
+		$field_thunbnail = "thumbnail";
+		
+		if ($this->device == "s40")
+		{
+			$field_thumbnail = "thumbnail_s40";
+		}
 
-		$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', thumbnail) END AS thumbnail
+		$sql = "SELECT id, title, description, CASE '$field_thumbnail' WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', thumbnail) END AS thumbnail
 		FROM tv_category 
 		WHERE online = 1";
 		
