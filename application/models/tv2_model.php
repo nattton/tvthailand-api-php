@@ -101,18 +101,16 @@ class Tv2_model extends CI_Model
 		array_push($catList, $obj);
 		
 		
-		$field_thunbnail = "";
 		if ($this->device == "s40")
 		{
-			$field_thumbnail = "thumbnail_s40";
+			$sql = "SELECT id, title, description, CASE thumbnail_s40 WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', thumbnail_s40) END AS thumbnail ";
 		}
 		else
 		{
-			$field_thunbnail = "thumbnail";
+			$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', thumbnail) END AS thumbnail ";
 		}
 
-		$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', $field_thumbnail) END AS thumbnail
-		FROM tv_category 
+		$sql .= " FROM tv_category 
 		WHERE online = 1";
 		
 		if(!$this->isTH || $this->legalrights) {
