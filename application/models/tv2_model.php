@@ -224,6 +224,10 @@ class Tv2_model extends CI_Model
 
 		if ($this->isDeviceSupport()) {
 			$sql .= " AND `$this->device` = 1";
+			if ($this->device == "wp")
+			{
+				$sql .= " AND programlist_src_type = 0";
+			}
 		}
 
 		if(!$this->isTH) {
@@ -253,6 +257,10 @@ class Tv2_model extends CI_Model
 
 		if ($this->isDeviceSupport()) {
 			$sql .= " AND `$this->device` = 1";
+			 if ($this->device == "wp")
+			 {   
+				$sql .= " AND programlist_src_type = 0";
+			 }
 		}
 
 		if(!$this->isTH) {
@@ -279,9 +287,11 @@ class Tv2_model extends CI_Model
 		rating 
 		FROM tv_program 
 		WHERE online = 1 AND channel_id = $id";
-
-		if ($this->isDeviceSupport()) {
+                if ($this->isDeviceSupport()) {
 			$sql .= " AND `$this->device` = 1";
+			if ($this->device == "wp") {
+				$sql .= " AND programlist_src_type = 0";
+			}       
 		}
 
 		if(!$this->isTH) {
