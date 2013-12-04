@@ -111,7 +111,7 @@ class Tv2_model extends CI_Model
 			$field_thunbnail = "thumbnail";
 		}
 
-		$sql = "SELECT id, title, description, CASE `$field_thumbanil`  WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', $field_thumbnail) END AS thumbnail
+		$sql = "SELECT id, title, description, CASE thumbanil WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', $field_thumbnail) END AS thumbnail
 		FROM tv_category 
 		WHERE online = 1";
 		
