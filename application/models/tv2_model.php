@@ -100,11 +100,15 @@ class Tv2_model extends CI_Model
 
 		array_push($catList, $obj);
 		
-		$field_thunbnail = "thumbnail";
 		
+		$field_thunbnail = "";
 		if ($this->device == "s40")
 		{
 			$field_thumbnail = "thumbnail_s40";
+		}
+		else
+		{
+			$field_thunbnail = "thumbnail";
 		}
 
 		$sql = "SELECT id, title, description, CASE `$field_thumbanil`  WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', $field_thumbnail) END AS thumbnail
