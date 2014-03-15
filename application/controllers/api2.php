@@ -238,6 +238,10 @@ class Api2 extends CI_Controller {
 			else if ('tophits' == $id) {
 				$memData = $this->_getProgramTopHits($start);
 			}
+			else if ('recents' == $id) {
+				$memData = $this->_getProgramRecents($start);
+				$this->storeKey($this->getWhatsNewKey(), $cache_key);
+			}
 			else {
 				$memData = $this->_getProgramByCategory($id, $start);
 			}
@@ -320,19 +324,9 @@ class Api2 extends CI_Controller {
 		}
 		else
 		{
-			$this->load->model('Tv2_model','', TRUE);
-			$this->Tv2_model->setDevice($this->device);
-			$this->Tv2_model->setIsTH($this->isTH);
-			$this->Tv2_model->setLegalRights($this->lr);
-
-			$data['json']->programs = $this->Tv2_model->getWhatsNewProgram($start);
-
-			$memData = $this->load->view('json', $data, TRUE);
-
+			$memData = $this->_getProgramRecents($start);
 			$this->memcached->add($cache_key, $memData, $this->cache_time);
-
 			$this->storeKey($this->getWhatsNewKey(), $cache_key);
-
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -372,6 +366,18 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setLegalRights($this->lr);
 		
 		$data['json']->categories = $this->Tv2_model->getChannel();
+		return $this->load->view('json', $data, TRUE);
+	}
+	
+	
+	private function _getProgramRecents($start = 0) {
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setDevice($this->device);
+		$this->Tv2_model->setIsTH($this->isTH);
+		$this->Tv2_model->setLegalRights($this->lr);
+
+		$data['json']->programs = $this->Tv2_model->getWhatsNewProgram($start);
+
 		return $this->load->view('json', $data, TRUE);
 	}
 	

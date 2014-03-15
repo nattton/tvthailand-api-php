@@ -85,6 +85,23 @@ class Tv2_model extends CI_Model
 	function getCategory() {
 		$catList = array();
 		
+		// Add Recents
+		$obj = new stdClass();
+		$obj->id = 'recents';
+		$obj->title = 'รายการล่าสุด';
+		$obj->description = 'Recents';
+		if ($this->device == "s40")
+		{
+			$obj->thumbnail = 'http://thumbnail.instardara.com/category/s40_ic_cate_empty.png';
+		}
+		else
+		{
+			$obj->thumbnail = 'http://thumbnail.instardara.com/category/ic_cate_empty.png';
+		}
+
+		array_push($catList, $obj);
+		
+		// Add Top Hits
 		$obj = new stdClass();
 		$obj->id = 'tophits';
 		$obj->title = 'Top Hits';
@@ -110,8 +127,7 @@ class Tv2_model extends CI_Model
 			$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', thumbnail) END AS thumbnail ";
 		}
 
-		$sql .= " FROM tv_category 
-		WHERE online = 1";
+		$sql .= " FROM tv_category WHERE online = 1";
 		
 		if(!$this->isTH || $this->legalrights) {
 			$sql .= " AND th_restrict = 0";
