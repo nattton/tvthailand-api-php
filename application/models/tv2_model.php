@@ -149,11 +149,11 @@ class Tv2_model extends CI_Model
 		{
 			if ($this->device == "s40")
 			{
-				$sql = "SELECT id, title, description, CASE thumbnail_s40 WHEN '' THEN '' ELSE CONCAT('$this->channel_thumbnail_path', thumbnail_s40) END AS thumbnail, url_$this->device url ";
+				$sql = "SELECT id, title, description, CASE thumbnail_s40 WHEN '' THEN '' ELSE CONCAT('$this->channel_thumbnail_path', thumbnail_s40) END AS thumbnail, url_$this->device url, has_show ";
 			}
 			else
 			{
-				$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->channel_thumbnail_path', thumbnail) END AS thumbnail, url_$this->device url ";
+				$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->channel_thumbnail_path', thumbnail) END AS thumbnail, url_$this->device url, has_show ";
 			}
 			
 			$sql .= " FROM tv_channel
@@ -169,7 +169,7 @@ class Tv2_model extends CI_Model
 		}
 		else
 		{
-			$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->channel_thumbnail_path', thumbnail) END AS thumbnail, url
+			$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->channel_thumbnail_path', thumbnail) END AS thumbnail, url, has_show
 			FROM tv_channel
 			WHERE online = 1 
 			ORDER BY `order`, title";
