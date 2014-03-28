@@ -208,9 +208,9 @@ class Tv2_model extends CI_Model
 		$sql = "SELECT program_id id, 
 		program_title title, 
 		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail,  
-		program_time description,  last_epname, rating
-		FROM tv_program,
+		program_time description,  last_epname, rating,
 		is_otv, otv_id, otv_api_name  
+		FROM tv_program
 		WHERE online = 1";
 
 		if ($this->isDeviceSupport()) {
@@ -376,8 +376,7 @@ class Tv2_model extends CI_Model
 		last_epname, 
 		SUM( tv_programlist.programlist_count ) view_count, 
 		rating,
-		5000 as vote_count,
-		is_otv, otv_id, otv_api_name  
+		5000 as vote_count, 
 		FROM tv_program
 		INNER JOIN tv_programlist ON ( tv_program.program_id = tv_programlist.program_id ) 
 		WHERE tv_program.program_id = '$id'
