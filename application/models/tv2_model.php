@@ -263,7 +263,8 @@ class Tv2_model extends CI_Model
 		program_title title, 
 		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail, 
 		program_time description, 
-		rating 
+		rating,
+		otv_id, otv_api_name 
 		FROM tv_program 
 		WHERE online = 1 AND category_id = $id";
 
@@ -292,7 +293,8 @@ class Tv2_model extends CI_Model
 		program_title title, 
 		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail, 
 		program_time description, 
-		rating 
+		rating,
+		otv_id, otv_api_name 
 		FROM tv_program 
 		WHERE online = 1 AND channel_id = $id";
 
@@ -327,14 +329,16 @@ class Tv2_model extends CI_Model
 		if($this->isTH)
 		{
 			$sql = "SELECT tv_program.program_id id, tv_program.program_title title, CASE tv_program.program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', tv_program.program_thumbnail) END AS thumbnail, tv_program.program_time description,
-		CASE SUBSTRING(CONVERT(tv_program.program_title USING utf8), 1, 1)  WHEN SUBSTRING(CONVERT('$keyword' USING utf8), 1, 1) THEN 1 ELSE 0 END AS occur 
+		CASE SUBSTRING(CONVERT(tv_program.program_title USING utf8), 1, 1)  WHEN SUBSTRING(CONVERT('$keyword' USING utf8), 1, 1) THEN 1 ELSE 0 END AS occur, 
+		otv_id, otv_api_name
 		FROM tv_program WHERE $special tv_program.program_title LIKE '%$keyword%' 
 		ORDER BY occur DESC, tv_program.program_title ASC $limit";
 		}
 		else
 		{
 			$sql = "SELECT tv_program.program_id id, tv_program.program_title title, CASE tv_program.program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', tv_program.program_thumbnail) END AS thumbnail, tv_program.program_time time,
-		CASE SUBSTRING(CONVERT(tv_program.program_title USING utf8), 1, 1)  WHEN SUBSTRING(CONVERT('$keyword' USING utf8), 1, 1) THEN 1 ELSE 0 END AS occur 
+		CASE SUBSTRING(CONVERT(tv_program.program_title USING utf8), 1, 1)  WHEN SUBSTRING(CONVERT('$keyword' USING utf8), 1, 1) THEN 1 ELSE 0 END AS occur,
+		otv_id, otv_api_name 
 		FROM tv_program WHERE $special tv_program.program_title LIKE '%$keyword%' AND tv_program.th_restrict = 0
 		ORDER BY occur DESC, tv_program.program_title ASC $limit";
 		}
