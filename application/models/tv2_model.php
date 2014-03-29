@@ -376,7 +376,8 @@ class Tv2_model extends CI_Model
 		last_epname, 
 		SUM( tv_programlist.programlist_count ) view_count, 
 		rating,
-		5000 as vote_count
+		5000 as vote_count,
+		is_otv, otv_id, otv_api_name 
 		FROM tv_program
 		INNER JOIN tv_programlist ON ( tv_program.program_id = tv_programlist.program_id ) 
 		WHERE tv_program.program_id = '$id'
