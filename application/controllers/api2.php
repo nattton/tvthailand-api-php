@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Api2 extends CI_Controller {
-	private $namespace_prefix = 'API2';
+	private $namespace_prefix = 'API2_TEST';
 	private $cache_time = 21600;
 	private $country_code = '';
 	private $country_cache = '';
@@ -20,7 +20,6 @@ class Api2 extends CI_Controller {
 			$this->country_cache = 'TH';
 			$this->isTH = TRUE;
 		}
-		
 		
 		// Set Device
 
@@ -53,6 +52,10 @@ class Api2 extends CI_Controller {
 
 	private function getChannelKey($id) {
 		return "API:CHANNEL:$id";
+	}
+	
+	private function getRadioKey($id) {
+		return "API:RADIO:$id";
 	}
 	
 	private function getWhatsNewKey() {
@@ -214,6 +217,7 @@ class Api2 extends CI_Controller {
 
 			$data['json']->categories = $this->Tv2_model->getCategory();
 			$data['json']->channels = $this->Tv2_model->getChannel();
+			$data['json']->radios = $this->Tv2_model->getRadio();
 
 			$memData = $this->load->view('json', $data, TRUE);
 
@@ -266,6 +270,22 @@ class Api2 extends CI_Controller {
 			else {
 				$memData = $this->_getProgramByChannel($id, $start);
 			}
+			$this->memcached->add($cache_key, $memData, $this->cache_time);
+			$this->output->set_content_type('application/json')->set_output($memData);
+		}
+	}
+	
+	public function radio($id = -1, $start = 0)
+	{	
+		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "radio", $id, $start, $this->device, $this->country_cache, $this->lr);
+		$memData = $this->memcached->get($cache_key);
+		if(FALSE != $memData)
+		{
+			$this->output->set_content_type('application/json')->set_output($memData);
+		}
+		else
+		{
+			$memData = $this->_getRadio();
 			$this->memcached->add($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
@@ -366,6 +386,15 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setLegalRights($this->lr);
 		
 		$data['json']->categories = $this->Tv2_model->getChannel();
+		return $this->load->view('json', $data, TRUE);
+	}
+	
+	private function _getRadio() {
+		
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setDevice($this->device);
+		
+		$data['json']->radios = $this->Tv2_model->getRadio();
 		return $this->load->view('json', $data, TRUE);
 	}
 	

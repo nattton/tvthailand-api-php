@@ -7,6 +7,7 @@ class Tv2_model extends CI_Model
 	private $poster_thumbnail_path = 'http://thumbnail.instardara.com/poster/';
 	private $category_thumbnail_path = 'http://thumbnail.instardara.com/category/';
 	private $channel_thumbnail_path = 'http://thumbnail.instardara.com/channel/';
+	private $radio_thumbnail_path = 'http://thumbnail.instardara.com/radio/';
 	
 	private $deviceSupport = array('ios', 'android', 'wp', 's40');
 
@@ -159,7 +160,7 @@ class Tv2_model extends CI_Model
 			$sql .= " FROM tv_channel
 				WHERE online = 1 ";
 
-			if ($this->device == "wp" || $this->device == "s40")
+			if ($this->device == "s40")
 			{
 				$sql .= " AND has_show = 1 ";
 			}
@@ -171,6 +172,26 @@ class Tv2_model extends CI_Model
 		{
 			$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->channel_thumbnail_path', thumbnail) END AS thumbnail, url, has_show
 			FROM tv_channel
+			WHERE online = 1 
+			ORDER BY `order`, title";
+			return $this->db->query($sql)->result();
+		}
+	}
+	
+	function getRadio() {
+		if ($this->isDeviceSupport())
+		{
+			$sql = "SELECT id, title, description, 
+			CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->radio_thumbnail_path', thumbnail) END AS thumbnail, url_$this->device url 
+			FROM tv_radio 
+			WHERE online = 1 AND url_$this->device != '' ORDER BY `order`, title";
+			return $this->db->query($sql)->result();
+		}
+		else
+		{
+			$sql = "SELECT id, title, description, 
+			CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->radio_thumbnail_path', thumbnail) END AS thumbnail, url, has_show
+			FROM tv_radio
 			WHERE online = 1 
 			ORDER BY `order`, title";
 			return $this->db->query($sql)->result();
