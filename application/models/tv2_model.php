@@ -192,7 +192,7 @@ class Tv2_model extends CI_Model
 			$sql = "SELECT id, title, description, 
 			CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->radio_thumbnail_path', thumbnail) END AS thumbnail, url, has_show
 			FROM tv_radio
-			WHERE online = 1 
+			WHERE online = 1 AND url_$this->device != '' 
 			ORDER BY `order`, title";
 			return $this->db->query($sql)->result();
 		}
