@@ -386,6 +386,7 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setLegalRights($this->lr);
 		
 		$data['json']->channels = $this->Tv2_model->getChannel();
+		$data['json']->categories = $data['json']->channels;
 		return $this->load->view('json', $data, TRUE);
 	}
 	
