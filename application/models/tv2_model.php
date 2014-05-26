@@ -182,18 +182,18 @@ class Tv2_model extends CI_Model
 		if ($this->isDeviceSupport())
 		{
 			$sql = "SELECT id, title, description, 
-			CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->radio_thumbnail_path', thumbnail) END AS thumbnail, url_$this->device url 
+			CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->radio_thumbnail_path', thumbnail) END AS thumbnail, url_$this->device url, category  
 			FROM tv_radio 
-			WHERE online = 1 AND url_$this->device != '' ORDER BY `order`, title";
+			WHERE online = 1 AND url_$this->device != '' ORDER BY `order`, category";
 			return $this->db->query($sql)->result();
 		}
 		else
 		{
 			$sql = "SELECT id, title, description, 
-			CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->radio_thumbnail_path', thumbnail) END AS thumbnail, url, has_show
+			CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->radio_thumbnail_path', thumbnail) END AS thumbnail, url, category 
 			FROM tv_radio
 			WHERE online = 1 AND url != '' 
-			ORDER BY `order`, title";
+			ORDER BY `order`, category";
 			return $this->db->query($sql)->result();
 		}
 	}
