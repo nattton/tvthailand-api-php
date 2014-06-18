@@ -497,6 +497,24 @@ class Api2 extends CI_Controller {
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 	}
+	
+	public function program_info_otv($id)
+	{
+		$cache_key = "$this->namespace_prefix:program_info_otv:$id";
+		$memData = $this->memcached->get($cache_key);
+		if(FALSE != $memData)
+		{
+			$this->output->set_content_type('application/json')->set_output($memData);
+		}
+		else
+		{
+			$this->load->model('Tv2_model','', TRUE);
+			$data['json'] = $this->Tv2_model->getProgramInfoOtv($id);
+			$json = $this->load->view('json', $data, TRUE);
+			$this->memcached->add($cache_key, $json, $this->cache_time);
+			$this->output->set_content_type('application/json')->set_output($json);
+		}
+	}
 
 
 	public function clearCache($program_id = -1)
