@@ -389,40 +389,36 @@ class Tv2_model extends CI_Model
 	function getProgramInfo($id)
 	{
 		$id = intval($id);
-		$sql = "SELECT tv_program.program_id id, 
-		tv_program.program_title title, 
-		CASE tv_program.program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', tv_program.program_thumbnail) END AS thumbnail, 
-		CASE tv_program.poster WHEN '' THEN '' ELSE CONCAT('$this->poster_thumbnail_path', tv_program.poster) END AS poster, 
-		tv_program.program_time description, tv_program.program_detail detail, 
+		$sql = "SELECT program_id id, 
+		program_title title, 
+		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail, 
+		CASE poster WHEN '' THEN '' ELSE CONCAT('$this->poster_thumbnail_path', poster) END AS poster, 
+		program_time description, program_detail detail, 
 		last_epname, 
-		SUM( tv_programlist.programlist_count ) view_count, 
+		view_count, 
 		rating,
 		5000 as vote_count,
 		is_otv, otv_id, otv_api_name 
 		FROM tv_program
-		INNER JOIN tv_programlist ON ( tv_program.program_id = tv_programlist.program_id ) 
-		WHERE tv_program.program_id = '$id'
-		GROUP BY tv_programlist.program_id";
+		WHERE program_id = '$id'";
 		return $this->db->query($sql)->row_array();
 	}
 	
 	function getProgramInfoOtv($id)
 	{
 		$id = intval($id);
-		$sql = "SELECT tv_program.program_id id, 
-		tv_program.program_title title, 
-		CASE tv_program.program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', tv_program.program_thumbnail) END AS thumbnail, 
-		CASE tv_program.poster WHEN '' THEN '' ELSE CONCAT('$this->poster_thumbnail_path', tv_program.poster) END AS poster, 
-		tv_program.program_time description, tv_program.program_detail detail, 
+		$sql = "SELECT program_id id, 
+		program_title title, 
+		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail, 
+		CASE poster WHEN '' THEN '' ELSE CONCAT('$this->poster_thumbnail_path', poster) END AS poster, 
+		program_time description, program_detail detail, 
 		last_epname, 
-		SUM( tv_programlist.programlist_count ) view_count, 
+		view_count, 
 		rating,
 		5000 as vote_count,
 		is_otv, otv_id, otv_api_name 
 		FROM tv_program
-		INNER JOIN tv_programlist ON ( tv_program.program_id = tv_programlist.program_id ) 
-		WHERE tv_program.otv_id = '$id'
-		GROUP BY tv_programlist.program_id";
+		WHERE otv_id = '$id'";
 		return $this->db->query($sql)->row_array();
 	}
 	
