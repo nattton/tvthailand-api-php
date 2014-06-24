@@ -93,11 +93,11 @@ class Tv2_model extends CI_Model
 		$obj->description = 'Recents';
 		if ($this->device == "s40")
 		{
-			$obj->thumbnail = 'http://thumbnail.instardara.com/category/s40_ic_cate_empty.png';
+			$obj->thumbnail = 'http://thumbnail.instardara.com/category/s40_00_recently.png';
 		}
 		else
 		{
-			$obj->thumbnail = 'http://thumbnail.instardara.com/category/ic_cate_empty.png';
+			$obj->thumbnail = 'http://thumbnail.instardara.com/category/00_recently.png';
 		}
 
 		array_push($catList, $obj);
@@ -109,11 +109,11 @@ class Tv2_model extends CI_Model
 		$obj->description = 'Top Hits';
 		if ($this->device == "s40")
 		{
-			$obj->thumbnail = 'http://thumbnail.instardara.com/category/s40_ic_cate_empty.png';
+			$obj->thumbnail = 'http://thumbnail.instardara.com/category/s40_00_cate_tophits.png';
 		}
 		else
 		{
-			$obj->thumbnail = 'http://thumbnail.instardara.com/category/ic_cate_empty.png';
+			$obj->thumbnail = 'http://thumbnail.instardara.com/category/00_cate_tophits.png';
 		}
 
 		array_push($catList, $obj);
