@@ -283,7 +283,8 @@ class Tv2_model extends CI_Model
 	function getProgramByCategory($id, $start = 0) {
 		$id = intval($id);
 
-		$sql = "SELECT program_id id, 
+		if($this->device == 'ios') {
+			$sql = "SELECT program_id id, 
 		program_title title, 
 		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail, 
 		program_time description, 
@@ -291,6 +292,17 @@ class Tv2_model extends CI_Model
 		is_otv, otv_id, otv_api_name 
 		FROM tv_program 
 		WHERE online = 1 AND category_id = $id";
+		} else {
+			$sql = "SELECT program_id id, 
+		program_title title, 
+		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail, 
+		program_time description, 
+		rating,
+		0 as is_otv, otv_id, otv_api_name 
+		FROM tv_program 
+		WHERE online = 1 AND category_id = $id";
+		}
+		
 
 		if ($this->isDeviceSupport()) {
 			$sql .= " AND `$this->device` = 1";
