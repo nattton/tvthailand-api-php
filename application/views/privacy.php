@@ -5,6 +5,7 @@ $this->load->helper('html');
 <html lang="en">
 <head>
 	<meta charset="utf-8">
+	<meta name = "viewport" content = "initial-scale = 1.0, user-scalable = no, width = 100%"/>
 	<title>TV Thailand Privacy Policy</title>
 
 	<script type="text/javascript">
