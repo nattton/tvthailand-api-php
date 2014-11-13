@@ -79,7 +79,17 @@ class Tv2_model extends CI_Model
 			$this->db->where("ad_url !=", "");
 		}
 		$this->db->from('ads');
-		$this->db->where('active',1);
+		$this->db->where('active', 1);
+		return $this->db->get()->result();
+	}
+	
+	function getPrerollAdvertise(){
+		$this->db->select("name, url, skip_time");
+		$this->db->from('preroll_advertise');
+		$this->db->where('active', 1);
+		if ($this->isDeviceSupport()) {
+			$this->db->where("platform", $this->device);
+		}
 		return $this->db->get()->result();
 	}
 	

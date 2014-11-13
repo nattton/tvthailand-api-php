@@ -200,6 +200,25 @@ class Api2 extends CI_Controller {
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 	}
+	
+	public function preroll_advertise()
+	{
+		$cache_key = "$this->namespace_prefix:preroll_advertise:$this->device";
+		$memData = $this->memcached->get($cache_key);
+		if(FALSE != $memData)
+		{
+			$this->output->set_content_type('application/json')->set_output($memData);
+		}
+		else
+		{
+			$this->load->model('Tv2_model','', TRUE);
+			$this->Tv2_model->setDevice($this->device);
+			$data['json']->ads = $this->Tv2_model->getPrerollAdvertise();
+			$json = $this->load->view('json', $data, TRUE);
+			$this->memcached->add($cache_key, $json, $this->cache_time);
+			$this->output->set_content_type('application/json')->set_output($json);
+		}
+	}
 
 	public function section() {
 		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespace_prefix, "section", $this->device, $this->country_cache, $this->lr);
