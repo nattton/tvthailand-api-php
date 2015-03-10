@@ -396,6 +396,22 @@ class Tv2_model extends CI_Model
 		return $this->db->get()->result();
 	}
 	
+	function getEpisodeRaw($program_id, $start = 0)
+	{
+		$id = intval($program_id);
+		$this->db->select('programlist_id id, programlist_ep ep, programlist_epname title,  programlist_youtube video_encrypt, programlist_src_type src_type, programlist_date date, programlist_count view_count, parts, programlist_password pwd');
+		$this->db->from('programlist');
+		$this->db->where('programlist_banned',0);
+		$this->db->where('program_id', $id);
+		if($this->device == 's40') {
+			$this->db->where('programlist_src_type', 0);
+		}
+		$this->db->order_by('ep', 'desc');
+		$this->db->order_by('id', 'desc');
+		$this->db->limit($this->limit, intval($start));
+		return $this->db->get()->result();
+	}
+	
 	function getProgramInfo($id)
 	{
 		$id = intval($id);
