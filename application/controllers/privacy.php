@@ -7,10 +7,14 @@ class Privacy extends CI_Controller {
 	}
 
 	public function index() {
-		$this->load->view('privacy');
+		$this->load->view('privacy/mobile');
 	}
 	
 	public function mobile() {
-		$this->load->view('privacy');		
+		$this->load->view('privacy/mobile');		
+	}
+	
+	public function windows() {
+		$this->load->view('privacy/windows');		
 	}
 }
