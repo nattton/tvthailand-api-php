@@ -9,7 +9,7 @@ class Tv2_model extends CI_Model
 	private $channel_thumbnail_path = 'http://thumbnail.instardara.com/channel/';
 	private $radio_thumbnail_path = 'http://thumbnail.instardara.com/radio/';
 	
-	private $deviceSupport = array('ios', 'android', 'wp', 's40');
+	private $deviceSupport = array('ios', 'android', 'wp', 's40', 'windows');
 
 	private $isTH = FALSE;
 	private $legalrights = FALSE;
