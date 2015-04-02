@@ -68,6 +68,11 @@ elseif($programlist_src_type == 1)
 	echo '<br /><iframe frameborder="0" width="'.$width.'" height="'.$height.'" src="http://www.dailymotion.com/embed/video/'.$youtubes[$i].'"></iframe>';
 	
 }
+elseif($programlist_src_type == 14 || $programlist_src_type == 15)
+{
+	echo '<br /><a target="_blank" href="http://video.mthai.com/cool/player/'.$youtubes[$i].'.html">Link</a>';
+	echo '<br />Password : '.$programlist_password;
+}
 		}
 ?>
 </div>
