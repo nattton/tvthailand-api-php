@@ -17,6 +17,7 @@ class Api3 extends CI_Controller {
 		if(ENVIRONMENT == 'production') {
 	 		$this->memcached->addServer('tvthailand.gntesa.cfg.use1.cache.amazonaws.com', '11211');			
 		} else {
+			$this->memcached->addServer('localhost', '11211');
 			$this->country_cache = 'TH';
 			$this->isTH = TRUE;
 		}
@@ -155,6 +156,7 @@ class Api3 extends CI_Controller {
 			$this->Tv3_model->setDevice($this->device);
 			$result = $this->Tv3_model->getMessage();
 			
+			$data = array('json' => new stdClass());
 			$data['json']->id = $result->id;
 			$data['json']->title = $result->title;
 			$data['json']->message = $result->message;
@@ -192,6 +194,7 @@ class Api3 extends CI_Controller {
 		{
 			$this->load->model('Tv3_model','', TRUE);
 			$this->Tv3_model->setDevice($this->device);
+			$data = array('json' => new stdClass());
 			$data['json']->delay_start = 1000;
 			$data['json']->ads = $this->Tv3_model->getAdvertise();
 
@@ -213,6 +216,7 @@ class Api3 extends CI_Controller {
 		{
 			$this->load->model('Tv3_model','', TRUE);
 			$this->Tv3_model->setDevice($this->device);
+			$data = array('json' => new stdClass());
 			$data['json']->ads = $this->Tv3_model->getPrerollAdvertise();
 			$json = $this->load->view('json', $data, TRUE);
 			$this->memcached->add($cache_key, $json, $this->cache_time);
@@ -234,6 +238,7 @@ class Api3 extends CI_Controller {
 			$this->Tv3_model->setIsTH($this->isTH);
 			$this->Tv3_model->setLegalRights($this->lr);
 
+			$data = array('json' => new stdClass());
 			$data['json']->categories = $this->Tv3_model->getCategory();
 			$data['json']->channels = $this->Tv3_model->getChannel();
 			$data['json']->radios = $this->Tv3_model->getRadio();
@@ -341,6 +346,7 @@ class Api3 extends CI_Controller {
 			$this->Tv3_model->setIsTH($this->isTH);
 			$this->Tv3_model->setLegalRights($this->lr);
 
+			$data = array('json' => new stdClass());
 			$data['json']->programs = $this->Tv3_model->getAllProgram();
 
 			$memData = $this->load->view('json', $data, TRUE);
@@ -393,17 +399,19 @@ class Api3 extends CI_Controller {
 		$this->Tv3_model->setIsTH($this->isTH);
 		$this->Tv3_model->setLegalRights($this->lr);
 		
+		$data = array('json' => new stdClass());
 		$data['json']->categories = $this->Tv3_model->getCategory();
 		return $this->load->view('json', $data, TRUE);
 	}
 
-	private function _getChannel() {
-		
+	private function _getChannel() 
+	{
 		$this->load->model('Tv3_model','', TRUE);
 		$this->Tv3_model->setDevice($this->device);
 		$this->Tv3_model->setIsTH($this->isTH);
 		$this->Tv3_model->setLegalRights($this->lr);
 		
+		$data = array('json' => new stdClass());
 		$data['json']->channels = $this->Tv3_model->getChannel();
 		$data['json']->categories = $data['json']->channels;
 		return $this->load->view('json', $data, TRUE);
@@ -414,6 +422,7 @@ class Api3 extends CI_Controller {
 		$this->load->model('Tv3_model','', TRUE);
 		$this->Tv3_model->setDevice($this->device);
 		
+		$data = array('json' => new stdClass());
 		$data['json']->radios = $this->Tv3_model->getRadio();
 		return $this->load->view('json', $data, TRUE);
 	}
@@ -424,7 +433,8 @@ class Api3 extends CI_Controller {
 		$this->Tv3_model->setDevice($this->device);
 		$this->Tv3_model->setIsTH($this->isTH);
 		$this->Tv3_model->setLegalRights($this->lr);
-
+		
+		$data = array('json' => new stdClass());
 		$data['json']->programs = $this->Tv3_model->getWhatsNewProgram($start);
 
 		return $this->load->view('json', $data, TRUE);
@@ -436,6 +446,7 @@ class Api3 extends CI_Controller {
 		$this->Tv3_model->setIsTH($this->isTH);
 		$this->Tv3_model->setLegalRights($this->lr);
 
+		$data = array('json' => new stdClass());
 		$data['json']->programs = $this->Tv3_model->getProgramByTopHits($start);
 
 		return $this->load->view('json', $data, TRUE);
@@ -447,6 +458,7 @@ class Api3 extends CI_Controller {
 		$this->Tv3_model->setIsTH($this->isTH);
 		$this->Tv3_model->setLegalRights($this->lr);
 
+		$data = array('json' => new stdClass());
 		$data['json']->programs = $this->Tv3_model->getProgramByCategory($id, $start);
 		return $this->load->view('json', $data, TRUE);
 	}
@@ -457,6 +469,7 @@ class Api3 extends CI_Controller {
 		$this->Tv3_model->setIsTH($this->isTH);
 		$this->Tv3_model->setLegalRights($this->lr);
 
+		$data = array('json' => new stdClass());
 		$data['json']->programs = $this->Tv3_model->getProgramByChannel($id, $start);
 		return $this->load->view('json', $data, TRUE);
 	}
@@ -468,7 +481,8 @@ class Api3 extends CI_Controller {
 		$this->Tv3_model->setDevice($this->device);
 		$this->Tv3_model->setIsTH($this->isTH);
 		$this->Tv3_model->setLegalRights($this->lr);
-
+		
+		$data = array('json' => new stdClass());
 		$data['json']->programs = $this->Tv3_model->getProgramSearch($keyword, $start);
 		return $this->load->view('json', $data, TRUE);
 	}
@@ -487,6 +501,7 @@ class Api3 extends CI_Controller {
 			$this->Tv3_model->setIsTH($this->isTH);
 			$this->Tv3_model->setLegalRights($this->lr);
 			
+			$data = array('json' => new stdClass());
 			$data['json']->code = 200;
 			if($start == 0) {
 				$data['json']->info = $this->Tv3_model->getProgramInfo($id);
@@ -513,6 +528,7 @@ class Api3 extends CI_Controller {
 			$this->Tv3_model->setIsTH($this->isTH);
 			$this->Tv3_model->setLegalRights($this->lr);
 			
+			$data = array('json' => new stdClass());
 			$data['json']->code = 200;
 			if($start == 0) {
 				$data['json']->info = $this->Tv3_model->getProgramInfo($id);
@@ -536,6 +552,7 @@ class Api3 extends CI_Controller {
 		else
 		{
 			$this->load->model('Tv3_model','', TRUE);
+			$data = array('json' => new stdClass());
 			$data['json'] = $this->Tv3_model->getProgramInfo($id);
 			$json = $this->load->view('json', $data, TRUE);
 			$this->memcached->add($cache_key, $json, $this->cache_time);
@@ -554,6 +571,7 @@ class Api3 extends CI_Controller {
 		else
 		{
 			$this->load->model('Tv3_model','', TRUE);
+			$data = array('json' => new stdClass());
 			$data['json'] = $this->Tv3_model->getProgramInfoOtv($id);
 			$json = $this->load->view('json', $data, TRUE);
 			$this->memcached->add($cache_key, $json, $this->cache_time);
