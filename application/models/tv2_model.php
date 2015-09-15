@@ -8,6 +8,7 @@ class Tv2_model extends CI_Model
 	private $category_thumbnail_path = 'http://thumbnail.instardara.com/category/';
 	private $channel_thumbnail_path = 'http://thumbnail.instardara.com/channel/';
 	private $radio_thumbnail_path = 'http://thumbnail.instardara.com/radio/';
+	private $otv_logo_path = 'http://thumbnail.instardara.com/otv_logo/';
 	
 	private $deviceSupport = array('ios', 'android', 'wp', 's40', 'windows');
 
@@ -214,7 +215,8 @@ class Tv2_model extends CI_Model
 		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail, 
 		program_time description, 
 		rating,
-		is_otv, otv_id, otv_api_name  
+		is_otv, otv_id, otv_api_name,
+		CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo   
 		FROM tv_program 
 		WHERE online = 1";
 
@@ -240,7 +242,8 @@ class Tv2_model extends CI_Model
 		program_title title, 
 		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail,  
 		program_time description,  last_epname, rating,
-		is_otv, otv_id, otv_api_name  
+		is_otv, otv_id, otv_api_name,
+		CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo   
 		FROM tv_program
 		WHERE online = 1";
 
@@ -268,7 +271,8 @@ class Tv2_model extends CI_Model
 		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail, 
 		program_time description, 
 		rating,
-		is_otv, otv_id, otv_api_name 
+		is_otv, otv_id, otv_api_name,
+		CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo  
 		FROM tv_program 
 		WHERE online = 1";
 
@@ -298,7 +302,8 @@ class Tv2_model extends CI_Model
 		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail, 
 		program_time description, 
 		rating,
-		is_otv, otv_id, otv_api_name 
+		is_otv, otv_id, otv_api_name,
+		CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo  
 		FROM tv_program 
 		WHERE online = 1 AND category_id = $id";
 
@@ -328,7 +333,8 @@ class Tv2_model extends CI_Model
 		CASE program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', program_thumbnail) END AS thumbnail, 
 		program_time description, 
 		rating,
-		is_otv, otv_id, otv_api_name 
+		is_otv, otv_id, otv_api_name,
+		CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo  
 		FROM tv_program 
 		WHERE online = 1 AND channel_id = $id";
 
@@ -364,7 +370,7 @@ class Tv2_model extends CI_Model
 		{
 			$sql = "SELECT tv_program.program_id id, tv_program.program_title title, CASE tv_program.program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', tv_program.program_thumbnail) END AS thumbnail, tv_program.program_time description,
 		CASE SUBSTRING(CONVERT(tv_program.program_title USING utf8), 1, 1)  WHEN SUBSTRING(CONVERT('$keyword' USING utf8), 1, 1) THEN 1 ELSE 0 END AS occur, 
-		is_otv, otv_id, otv_api_name 
+		is_otv, otv_id, otv_api_name, CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo  
 		FROM tv_program WHERE $special tv_program.program_title LIKE '%$keyword%' 
 		ORDER BY occur DESC, tv_program.program_title ASC $limit";
 		}
@@ -372,7 +378,7 @@ class Tv2_model extends CI_Model
 		{
 			$sql = "SELECT tv_program.program_id id, tv_program.program_title title, CASE tv_program.program_thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', tv_program.program_thumbnail) END AS thumbnail, tv_program.program_time time,
 		CASE SUBSTRING(CONVERT(tv_program.program_title USING utf8), 1, 1)  WHEN SUBSTRING(CONVERT('$keyword' USING utf8), 1, 1) THEN 1 ELSE 0 END AS occur,
-		is_otv, otv_id, otv_api_name  
+		is_otv, otv_id, otv_api_name, CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo   
 		FROM tv_program WHERE $special tv_program.program_title LIKE '%$keyword%' AND tv_program.th_restrict = 0
 		ORDER BY occur DESC, tv_program.program_title ASC $limit";
 		}
@@ -424,7 +430,8 @@ class Tv2_model extends CI_Model
 		view_count, 
 		rating,
 		5000 as vote_count,
-		is_otv, otv_id, otv_api_name 
+		is_otv, otv_id, otv_api_name,
+		CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo  
 		FROM tv_program
 		WHERE program_id = '$id'";
 		return $this->db->query($sql)->row_array();
@@ -442,7 +449,8 @@ class Tv2_model extends CI_Model
 		view_count, 
 		rating,
 		5000 as vote_count,
-		is_otv, otv_id, otv_api_name 
+		is_otv, otv_id, otv_api_name,
+		CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo  
 		FROM tv_program
 		WHERE otv_id = '$id'";
 		return $this->db->query($sql)->row_array();
