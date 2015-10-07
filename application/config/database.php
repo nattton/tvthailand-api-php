@@ -48,7 +48,7 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$url = parse_url('mysql2://makathon:G00UltraMrds@makathoninstance.c2ckzrktsntv.us-east-1.rds.amazonaws.com/tvthailanddb');
+$url = parse_url(getenv('DATABASE_URL'));
 
 $db['default']['hostname'] = $url['host'];
 $db['default']['username'] = $url['user'];

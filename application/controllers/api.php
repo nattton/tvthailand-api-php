@@ -13,8 +13,9 @@ class Api extends CI_Controller {
 		parent::__construct();
 
  		$this->load->library('MemcacheSASL','','memcached');
+ 		$this->memcached->addServer(getenv('MEMCACHED_HOST'), getenv('MEMCACHED_PORT'));
 		if(ENVIRONMENT == 'production') {
-	 		$this->memcached->addServer('tvthailand.gntesa.cfg.use1.cache.amazonaws.com', '11211');			
+	 		
 		} else {
 			$this->country_cache = 'TH';
 			$this->isTH = TRUE;
