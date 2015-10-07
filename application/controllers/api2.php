@@ -13,9 +13,7 @@ class Api2 extends CI_Controller {
 	{
 		parent::__construct();
 
- 		$this->load->library('MemcacheSASL','','memcached');
- 		
- 		$this->memcached->addServer(getenv('MEMCACHED_HOST'), getenv('MEMCACHED_PORT'));			
+ 		$this->load->driver('cache');		
  		
 		if(ENVIRONMENT == 'production') {
 			
@@ -70,7 +68,7 @@ class Api2 extends CI_Controller {
 	}
 
 	private function storeKey($cache_key, $value) {
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 
 		if(FALSE != $memData) {
 			$key_array = json_decode($memData);
@@ -78,20 +76,20 @@ class Api2 extends CI_Controller {
 			if (!in_array($value, $key_array)) {
 				array_push($key_array, $value);
 				$memData = json_encode($key_array);
-				$this->memcached->set($cache_key, $memData, $this->cache_time);
+				$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
 			}
 			
 		}
 		 else {
 		 	$key_array = array($value,);
 		 	$memData = json_encode($key_array);
-		 	$this->memcached->add($cache_key, $memData, $this->cache_time);
+		 	$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
 		 }
 		 // echo $memData;
 	}
 
 	public function showKey($cache_key) {
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		echo $memData;
 
 		if(FALSE != $memData) {
@@ -106,7 +104,7 @@ class Api2 extends CI_Controller {
 		$key =  $this->getCategoryKey($id);
 		echo $key;
 		echo "<br/>";
-		$memData = $this->memcached->get($key);
+		$memData = $this->cache->memcached->get($key);
 
 		echo $memData;
 		if(FALSE != $memData) {
@@ -121,7 +119,7 @@ class Api2 extends CI_Controller {
 		$key =  $this->getWhatsNewKey($id);
 		echo $key;
 		echo "<br/>";
-		$memData = $this->memcached->get($key);
+		$memData = $this->cache->memcached->get($key);
 
 		echo $memData;
 		if(FALSE != $memData) {
@@ -134,7 +132,7 @@ class Api2 extends CI_Controller {
 
 	public function showProgramKey($id) {
 		$key =  $this->getProgramKey($id);
-		$memData = $this->memcached->get($key);
+		$memData = $this->cache->memcached->get($key);
 
 		echo $memData;
 		if(FALSE != $memData) {
@@ -147,7 +145,7 @@ class Api2 extends CI_Controller {
 	
 	public function message() {
 		$cache_key = "$this->namespace_prefix:message:$this->device";
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -158,6 +156,7 @@ class Api2 extends CI_Controller {
 			$this->Tv2_model->setDevice($this->device);
 			$result = $this->Tv2_model->getMessage();
 			
+			$data = array('json' => new stdClass());
 			$data['json']->id = $result->id;
 			$data['json']->title = $result->title;
 			$data['json']->message = $result->message;
@@ -177,7 +176,7 @@ class Api2 extends CI_Controller {
 			
 			$data['json']->buttons = $buttons;
 			$json = $this->load->view('json', $data, TRUE);
-			$this->memcached->add($cache_key, $json, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 		
@@ -186,7 +185,7 @@ class Api2 extends CI_Controller {
 	public function advertise()
 	{
 		$cache_key = "$this->namespace_prefix:advertise:$this->device";
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -195,11 +194,12 @@ class Api2 extends CI_Controller {
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
+			$data = array('json' => new stdClass());
 			$data['json']->delay_start = 1000;
 			$data['json']->ads = $this->Tv2_model->getAdvertise();
 
 			$json = $this->load->view('json', $data, TRUE);
-			$this->memcached->add($cache_key, $json, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 	}
@@ -207,7 +207,7 @@ class Api2 extends CI_Controller {
 	public function preroll_advertise()
 	{
 		$cache_key = "$this->namespace_prefix:preroll_advertise:$this->device";
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -216,16 +216,17 @@ class Api2 extends CI_Controller {
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
+			$data = array('json' => new stdClass());
 			$data['json']->ads = $this->Tv2_model->getPrerollAdvertise();
 			$json = $this->load->view('json', $data, TRUE);
-			$this->memcached->add($cache_key, $json, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 	}
 
 	public function section() {
 		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespace_prefix, "section", $this->device, $this->country_cache, $this->lr);
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -236,14 +237,15 @@ class Api2 extends CI_Controller {
 			$this->Tv2_model->setDevice($this->device);
 			$this->Tv2_model->setIsTH($this->isTH);
 			$this->Tv2_model->setLegalRights($this->lr);
-
+			
+			$data = array('json' => new stdClass());
 			$data['json']->categories = $this->Tv2_model->getCategory();
 			$data['json']->channels = $this->Tv2_model->getChannel();
 			$data['json']->radios = $this->Tv2_model->getRadio();
 
 			$memData = $this->load->view('json', $data, TRUE);
 
-			$this->memcached->add($cache_key, $memData, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -251,7 +253,7 @@ class Api2 extends CI_Controller {
 	public function category($id = -1, $start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "category", $id, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -271,7 +273,7 @@ class Api2 extends CI_Controller {
 			else {
 				$memData = $this->_getProgramByCategory($id, $start);
 			}
-			$this->memcached->add($cache_key, $memData, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -279,7 +281,7 @@ class Api2 extends CI_Controller {
 	public function channel($id = -1, $start = 0)
 	{	
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "channel", $id, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -292,7 +294,7 @@ class Api2 extends CI_Controller {
 			else {
 				$memData = $this->_getProgramByChannel($id, $start);
 			}
-			$this->memcached->add($cache_key, $memData, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -300,7 +302,7 @@ class Api2 extends CI_Controller {
 	public function radio($id = -1, $start = 0)
 	{	
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "radio", $id, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -308,7 +310,7 @@ class Api2 extends CI_Controller {
 		else
 		{
 			$memData = $this->_getRadio();
-			$this->memcached->add($cache_key, $memData, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -317,13 +319,13 @@ class Api2 extends CI_Controller {
 	{	
 		$keyword = $this->input->get('keyword');
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "search", $keyword, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData) {
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 		else {
 			$memData = $this->_getProgramBySearch($keyword, $start);
-			$this->memcached->add($cache_key, $memData, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -332,7 +334,7 @@ class Api2 extends CI_Controller {
 	{
 		$cache_key = "$this->namespace_prefix:all_program:$this->device:$this->country_cache";
 		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespace_prefix, "all_program", $this->device, $this->country_cache, $this->lr);
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -344,11 +346,12 @@ class Api2 extends CI_Controller {
 			$this->Tv2_model->setIsTH($this->isTH);
 			$this->Tv2_model->setLegalRights($this->lr);
 
+			$data = array('json' => new stdClass());
 			$data['json']->programs = $this->Tv2_model->getAllProgram();
 
 			$memData = $this->load->view('json', $data, TRUE);
 
-			$this->memcached->add($cache_key, $memData, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
 
 /* 			$this->storeKey($this->getWhatsNewKey(), $cache_key); */
 
@@ -359,7 +362,7 @@ class Api2 extends CI_Controller {
 	public function whatsnew($start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "whatsnew", $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -367,7 +370,7 @@ class Api2 extends CI_Controller {
 		else
 		{
 			$memData = $this->_getProgramRecents($start);
-			$this->memcached->add($cache_key, $memData, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
 			$this->storeKey($this->getWhatsNewKey(), $cache_key);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
@@ -376,7 +379,7 @@ class Api2 extends CI_Controller {
 	public function tophits($start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "tophits", $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -384,7 +387,7 @@ class Api2 extends CI_Controller {
 		else
 		{
 			$memData = $this->_getProgramTopHits($start);
-			$this->memcached->add($cache_key, $memData, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -396,6 +399,7 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 		
+		$data = array('json' => new stdClass());
 		$data['json']->categories = $this->Tv2_model->getCategory();
 		return $this->load->view('json', $data, TRUE);
 	}
@@ -407,6 +411,7 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 		
+		$data = array('json' => new stdClass());
 		$data['json']->channels = $this->Tv2_model->getChannel();
 		$data['json']->categories = $data['json']->channels;
 		return $this->load->view('json', $data, TRUE);
@@ -417,6 +422,7 @@ class Api2 extends CI_Controller {
 		$this->load->model('Tv2_model','', TRUE);
 		$this->Tv2_model->setDevice($this->device);
 		
+		$data = array('json' => new stdClass());
 		$data['json']->radios = $this->Tv2_model->getRadio();
 		return $this->load->view('json', $data, TRUE);
 	}
@@ -428,6 +434,7 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
+		$data = array('json' => new stdClass());
 		$data['json']->programs = $this->Tv2_model->getWhatsNewProgram($start);
 
 		return $this->load->view('json', $data, TRUE);
@@ -439,6 +446,7 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
+		$data = array('json' => new stdClass());
 		$data['json']->programs = $this->Tv2_model->getProgramByTopHits($start);
 
 		return $this->load->view('json', $data, TRUE);
@@ -450,6 +458,7 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
+		$data = array('json' => new stdClass());
 		$data['json']->programs = $this->Tv2_model->getProgramByCategory($id, $start);
 		return $this->load->view('json', $data, TRUE);
 	}
@@ -460,6 +469,7 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
+		$data = array('json' => new stdClass());
 		$data['json']->programs = $this->Tv2_model->getProgramByChannel($id, $start);
 		return $this->load->view('json', $data, TRUE);
 	}
@@ -471,14 +481,15 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setDevice($this->device);
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
-
+		
+		$data = array('json' => new stdClass());
 		$data['json']->programs = $this->Tv2_model->getProgramSearch($keyword, $start);
 		return $this->load->view('json', $data, TRUE);
 	}
 
 	public function episode($id, $start = 0) {
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "episode", $id, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -490,13 +501,14 @@ class Api2 extends CI_Controller {
 			$this->Tv2_model->setIsTH($this->isTH);
 			$this->Tv2_model->setLegalRights($this->lr);
 			
+			$data = array('json' => new stdClass());
 			$data['json']->code = 200;
 			if($start == 0) {
 				$data['json']->info = $this->Tv2_model->getProgramInfo($id);
 			}
 			$data['json']->episodes = $this->Tv2_model->getEpisode($id, $start);
 			$json = $this->load->view('json',$data,TRUE);
-			$this->memcached->add($cache_key, $json, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
 			$this->storeKey($this->getProgramKey($id), $cache_key);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
@@ -504,7 +516,7 @@ class Api2 extends CI_Controller {
 	
 	public function episode_raw($id, $start = 0) {
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "episode_raw", $id, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -516,13 +528,14 @@ class Api2 extends CI_Controller {
 			$this->Tv2_model->setIsTH($this->isTH);
 			$this->Tv2_model->setLegalRights($this->lr);
 			
+			$data = array('json' => new stdClass());
 			$data['json']->code = 200;
 			if($start == 0) {
 				$data['json']->info = $this->Tv2_model->getProgramInfo($id);
 			}
 			$data['json']->episodes = $this->Tv2_model->getEpisodeRaw($id, $start);
 			$json = $this->load->view('json',$data,TRUE);
-			$this->memcached->add($cache_key, $json, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
 			$this->storeKey($this->getProgramKey($id), $cache_key);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
@@ -531,7 +544,7 @@ class Api2 extends CI_Controller {
 	public function program_info($id)
 	{
 		$cache_key = "$this->namespace_prefix:program_info:$id";
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -539,9 +552,10 @@ class Api2 extends CI_Controller {
 		else
 		{
 			$this->load->model('Tv2_model','', TRUE);
+			$data = array('json' => new stdClass());
 			$data['json'] = $this->Tv2_model->getProgramInfo($id);
 			$json = $this->load->view('json', $data, TRUE);
-			$this->memcached->add($cache_key, $json, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 	}
@@ -549,7 +563,7 @@ class Api2 extends CI_Controller {
 	public function program_info_otv($id)
 	{
 		$cache_key = "$this->namespace_prefix:program_info_otv:$id";
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->memcached->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -557,9 +571,10 @@ class Api2 extends CI_Controller {
 		else
 		{
 			$this->load->model('Tv2_model','', TRUE);
+			$data = array('json' => new stdClass());
 			$data['json'] = $this->Tv2_model->getProgramInfoOtv($id);
 			$json = $this->load->view('json', $data, TRUE);
-			$this->memcached->add($cache_key, $json, $this->cache_time);
+			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 	}
@@ -569,7 +584,7 @@ class Api2 extends CI_Controller {
 	{
 		if($program_id == -1)
 		{
-			$this->memcached->flush();
+			$this->cache->memcached->flush();
 			echo 'Flush MemCached';
 		}
 		else {
@@ -578,22 +593,22 @@ class Api2 extends CI_Controller {
 			$whatsnewKeyArray = $this->showWhatsNewKey();
 			
 			// Delete Store Key of Category 0
-			$this->memcached->delete($this->getWhatsNewKey());
+			$this->cache->memcached->delete($this->getWhatsNewKey());
 
 			// Delete Key of Category 0
 			foreach ($whatsnewKeyArray as $value) {
-				$this->memcached->delete($value);
+				$this->cache->memcached->delete($value);
 			}
 
 			// Get Key of Program $program
 			$programKeyArray = $this->showProgramKey($program_id);
 
 			// Delete Store Key of Program $program
-			$this->memcached->delete($this->getProgramKey($program_id));
+			$this->cache->memcached->delete($this->getProgramKey($program_id));
 
 			// Delete Key of Program $program
 			foreach ($programKeyArray as $value) {
-				$this->memcached->delete($value);
+				$this->cache->memcached->delete($value);
 			}
 
 			// $this->load->model('Tv_model','', TRUE);

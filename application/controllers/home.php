@@ -5,16 +5,13 @@ class Home extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->library('MemcacheSASL','','memcached');
-		if(ENVIRONMENT == 'production') {
-	 		$this->memcached->addServer('tvthailand.gntesa.cfg.use1.cache.amazonaws.com', '11211');			
-		} 		
+		$this->load->driver('cache');		
 		$this->load->model('Tv_model','', TRUE);
 	}
 	public function index($cat_id = 0 ,$start = 0)
 	{
 		$cache_key = 'index';
-		$memData = $this->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_output($memData);
@@ -33,7 +30,7 @@ class Home extends CI_Controller {
 			$this->load->view('footer');
 			
 			$output = $this->output->get_output();
-			$this->memcached->add($cache_key, $output, 21600);
+			$this->cache->redis->save($cache_key, $output, 21600);
 		}
 	}
 	
