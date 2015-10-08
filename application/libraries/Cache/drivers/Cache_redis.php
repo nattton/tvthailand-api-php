@@ -236,6 +236,63 @@ class CI_Cache_redis extends CI_Driver
 	{
 		return $this->_redis->decr($id, $offset);
 	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * rPush a raw value
+	 *
+	 * @param	string	$key Cache Key
+	 * @param	string	$value
+	 * @return	mixed	Item length
+	 */
+	public function rPush($key, $value)
+	{
+		return $this->_redis->rPush($key, $value);
+	}
+
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * lPush a raw value
+	 *
+	 * @param	string	$key Cache Key
+	 * @param	string	$value
+	 * @return	mixed	Item length
+	 */
+	public function lPush($key, $value)
+	{
+		return $this->_redis->lPush($key, $value);
+	}
+
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * lrange 
+	 *
+	 * @param	string	$key Cache Key
+	 * @param	int	$start
+	 * @param	int	$end
+	 * @return	array list
+	 */
+	public function lRange($key, $start, $end)
+	{
+		return $this->_redis->lRange($key, $start, $end);
+	}
+
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * lall get list
+	 *
+	 * @param	string	$id	Cache ID
+	 * @param	int	$offset	Step/value to reduce by
+	 * @return	mixed	New value on success or FALSE on failure
+	 */
+	public function lAll($key)
+	{
+		return $this->_redis->lRange($key, 0, -1);
+	}
 
 	// ------------------------------------------------------------------------
 

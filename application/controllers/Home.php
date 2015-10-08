@@ -38,12 +38,7 @@ class Home extends CI_Controller {
 	{
 		echo $_SERVER['GEOIP_COUNTRY_CODE'].' - '.$_SERVER['GEOIP_COUNTRY_NAME'];
 	}
-	
-	public function info()
-	{
-		phpinfo();
-	}
 }
 
 /* End of file home.php */
-/* Location: ./application/controllers/home.php */
+/* Location: ./application/controllers/Home.php */

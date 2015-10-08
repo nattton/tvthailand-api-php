@@ -66,86 +66,46 @@ class Api3 extends CI_Controller {
 	private function getProgramKey($id) {
 		return "API:PROGRAM:$id";
 	}
-
+	
 	private function storeKey($cache_key, $value) {
-		$memData = $this->cache->memcached->get($cache_key);
-
-		if(FALSE != $memData) {
-			$key_array = json_decode($memData);
-
-			if (!in_array($value, $key_array)) {
-				array_push($key_array, $value);
-				$memData = json_encode($key_array);
-				$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
-			}
-			
-		}
-		 else {
-		 	$key_array = array($value,);
-		 	$memData = json_encode($key_array);
-		 	$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
-		 }
-		 // echo $memData;
+		return $this->cache->redis->rPush($cache_key, $value);
 	}
 
 	public function showKey($cache_key) {
-		$memData = $this->cache->memcached->get($cache_key);
-		echo $memData;
-
-		if(FALSE != $memData) {
-			return json_decode($memData);
-		}
-		else {
-			return array();
-		}
+		$memData = $this->cache->redis->lAll($cache_key);
+		return $memData;
 	}
 
 	public function showCategoryKey($id) {
 		$key =  $this->getCategoryKey($id);
 		echo $key;
 		echo "<br/>";
-		$memData = $this->cache->memcached->get($key);
-
-		echo $memData;
-		if(FALSE != $memData) {
-			return json_decode($memData);
-		}
-		else {
-			return array();
-		}
+		$memData = $this->cache->redis->lAll($key);
+		echo var_dump($memData);
+		return $memData;
 	}
 
-	public function showWhatsNewKey($id) {
-		$key =  $this->getWhatsNewKey($id);
+	public function showWhatsNewKey() {
+		$key =  $this->getWhatsNewKey();
 		echo $key;
 		echo "<br/>";
-		$memData = $this->cache->memcached->get($key);
-
-		echo $memData;
-		if(FALSE != $memData) {
-			return json_decode($memData);
-		}
-		else {
-			return array();
-		}
+		$memData = $this->cache->redis->lAll($key);
+		echo var_dump($memData);
+		return $memData;
 	}
 
 	public function showProgramKey($id) {
 		$key =  $this->getProgramKey($id);
-		$memData = $this->cache->memcached->get($key);
-
-		echo $memData;
-		if(FALSE != $memData) {
-			return json_decode($memData);
-		}
-		else {
-			return array();
-		}
+		echo $key;
+		echo "<br/>";
+		$memData = $this->cache->redis->lAll($key);
+		echo var_dump($memData);
+		return $memData;
 	}
 	
 	public function message() {
 		$cache_key = "$this->namespace_prefix:message:$this->device";
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -176,7 +136,7 @@ class Api3 extends CI_Controller {
 			
 			$data['json']->buttons = $buttons;
 			$json = $this->load->view('json', $data, TRUE);
-			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 		
@@ -185,7 +145,7 @@ class Api3 extends CI_Controller {
 	public function advertise()
 	{
 		$cache_key = "$this->namespace_prefix:advertise:$this->device";
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -199,7 +159,7 @@ class Api3 extends CI_Controller {
 			$data['json']->ads = $this->Tv3_model->getAdvertise();
 
 			$json = $this->load->view('json', $data, TRUE);
-			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 	}
@@ -207,7 +167,7 @@ class Api3 extends CI_Controller {
 	public function preroll_advertise()
 	{
 		$cache_key = "$this->namespace_prefix:preroll_advertise:$this->device";
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -219,14 +179,14 @@ class Api3 extends CI_Controller {
 			$data = array('json' => new stdClass());
 			$data['json']->ads = $this->Tv3_model->getPrerollAdvertise();
 			$json = $this->load->view('json', $data, TRUE);
-			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 	}
 
 	public function section() {
 		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespace_prefix, "section", $this->device, $this->country_cache, $this->lr);
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -245,7 +205,7 @@ class Api3 extends CI_Controller {
 
 			$memData = $this->load->view('json', $data, TRUE);
 
-			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -253,7 +213,7 @@ class Api3 extends CI_Controller {
 	public function category($id = -1, $start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "category", $id, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -273,7 +233,7 @@ class Api3 extends CI_Controller {
 			else {
 				$memData = $this->_getProgramByCategory($id, $start);
 			}
-			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -281,7 +241,7 @@ class Api3 extends CI_Controller {
 	public function channel($id = -1, $start = 0)
 	{	
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "channel", $id, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -294,7 +254,7 @@ class Api3 extends CI_Controller {
 			else {
 				$memData = $this->_getProgramByChannel($id, $start);
 			}
-			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -302,7 +262,7 @@ class Api3 extends CI_Controller {
 	public function radio($id = -1, $start = 0)
 	{	
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "radio", $id, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -310,7 +270,7 @@ class Api3 extends CI_Controller {
 		else
 		{
 			$memData = $this->_getRadio();
-			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -319,13 +279,13 @@ class Api3 extends CI_Controller {
 	{	
 		$keyword = $this->input->get('keyword');
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "search", $keyword, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData) {
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 		else {
 			$memData = $this->_getProgramBySearch($keyword, $start);
-			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -334,7 +294,7 @@ class Api3 extends CI_Controller {
 	{
 		$cache_key = "$this->namespace_prefix:all_program:$this->device:$this->country_cache";
 		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespace_prefix, "all_program", $this->device, $this->country_cache, $this->lr);
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -351,7 +311,7 @@ class Api3 extends CI_Controller {
 
 			$memData = $this->load->view('json', $data, TRUE);
 
-			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 
 /* 			$this->storeKey($this->getWhatsNewKey(), $cache_key); */
 
@@ -362,7 +322,7 @@ class Api3 extends CI_Controller {
 	public function whatsnew($start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "whatsnew", $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -370,7 +330,7 @@ class Api3 extends CI_Controller {
 		else
 		{
 			$memData = $this->_getProgramRecents($start);
-			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 			$this->storeKey($this->getWhatsNewKey(), $cache_key);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
@@ -379,7 +339,7 @@ class Api3 extends CI_Controller {
 	public function tophits($start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "tophits", $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -387,7 +347,7 @@ class Api3 extends CI_Controller {
 		else
 		{
 			$memData = $this->_getProgramTopHits($start);
-			$this->cache->memcached->save($cache_key, $memData, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($memData);
 		}
 	}
@@ -489,7 +449,7 @@ class Api3 extends CI_Controller {
 
 	public function episode($id, $start = 0) {
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "episode", $id, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -508,7 +468,7 @@ class Api3 extends CI_Controller {
 			}
 			$data['json']->episodes = $this->Tv3_model->getEpisode($id, $start);
 			$json = $this->load->view('json',$data,TRUE);
-			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 			$this->storeKey($this->getProgramKey($id), $cache_key);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
@@ -516,7 +476,7 @@ class Api3 extends CI_Controller {
 	
 	public function episode_raw($id, $start = 0) {
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "episode_raw", $id, $start, $this->device, $this->country_cache, $this->lr);
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -535,7 +495,7 @@ class Api3 extends CI_Controller {
 			}
 			$data['json']->episodes = $this->Tv3_model->getEpisodeRaw($id, $start);
 			$json = $this->load->view('json',$data,TRUE);
-			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 			$this->storeKey($this->getProgramKey($id), $cache_key);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
@@ -544,7 +504,7 @@ class Api3 extends CI_Controller {
 	public function program_info($id)
 	{
 		$cache_key = "$this->namespace_prefix:program_info:$id";
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -555,7 +515,7 @@ class Api3 extends CI_Controller {
 			$data = array('json' => new stdClass());
 			$data['json'] = $this->Tv3_model->getProgramInfo($id);
 			$json = $this->load->view('json', $data, TRUE);
-			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 	}
@@ -563,7 +523,7 @@ class Api3 extends CI_Controller {
 	public function program_info_otv($id)
 	{
 		$cache_key = "$this->namespace_prefix:program_info_otv:$id";
-		$memData = $this->cache->memcached->get($cache_key);
+		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
 			$this->output->set_content_type('application/json')->set_output($memData);
@@ -574,7 +534,7 @@ class Api3 extends CI_Controller {
 			$data = array('json' => new stdClass());
 			$data['json'] = $this->Tv3_model->getProgramInfoOtv($id);
 			$json = $this->load->view('json', $data, TRUE);
-			$this->cache->memcached->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
 		}
 	}
@@ -584,55 +544,21 @@ class Api3 extends CI_Controller {
 	{
 		if($program_id == -1)
 		{
-			$this->cache->memcached->clean();
+			$this->cache->redis->clean();
 			echo 'Flush MemCached';
 		}
 		else {
-
-			// Get Key of Category 0 (Lastest)
-			$whatsnewKeyArray = $this->showWhatsNewKey();
-			
-			// Delete Store Key of Category 0
-			$this->cache->memcached->delete($this->getWhatsNewKey());
-
-			// Delete Key of Category 0
-			foreach ($whatsnewKeyArray as $value) {
-				$this->cache->memcached->delete($value);
-			}
-
-			// Get Key of Program $program
-			$programKeyArray = $this->showProgramKey($program_id);
-
-			// Delete Store Key of Program $program
-			$this->cache->memcached->delete($this->getProgramKey($program_id));
-
-			// Delete Key of Program $program
-			foreach ($programKeyArray as $value) {
-				$this->cache->memcached->delete($value);
-			}
-
-			// $this->load->model('Tv_model','', TRUE);
-			// $program = $this->Tv_model->getProgramInfo($program_id);
-			// if($program != FALSE)
-			// {
-
-			// }
+			$this->cache->redis->delete($this->showWhatsNewKey());
+			$this->cache->redis->delete($this->getWhatsNewKey());
+			$this->cache->redis->delete($this->showProgramKey($program_id));
+			$this->cache->redis->delete($this->getProgramKey($program_id));
 		}
-		
 	}
 
 	public function view_episode($id)
 	{
 		$this->load->model('Tv3_model','', TRUE);
 		$this->Tv3_model->viewEP($id);
-		
-		## TEST ##
-
-/*
-		$this->load->helper('url');
-		$url = 'http://27.131.144.6:8088/tv/index.html';
-		redirect($url, 'location', 301);
-*/
 
 	}
 	
