@@ -2,7 +2,7 @@
 
 class Api2 extends CI_Controller {
 	private $namespace_prefix = 'API2';
-	private $cache_time = 21600;
+	private $cache_time = 1200;
 	private $country_code = '';
 	private $country_cache = '';
 	private $isTH = FALSE;

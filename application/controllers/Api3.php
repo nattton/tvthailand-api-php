@@ -2,7 +2,7 @@
 
 class Api3 extends CI_Controller {
 	private $namespace_prefix = 'API3';
-	private $cache_time = 10;
+	private $cache_time = 1200;
 	private $country_code = '';
 	private $country_cache = '';
 	private $isTH = FALSE;
@@ -15,17 +15,12 @@ class Api3 extends CI_Controller {
 
  		$this->load->driver('cache');		
  		
-		if(ENVIRONMENT == 'production') {
-	 		
-		} else {
-			$this->country_cache = 'TH';
-			$this->isTH = TRUE;
-		}
+		$this->country_cache = 'TH';
+		$this->isTH = TRUE;
 		
 		// Set Device
 
 		($this->device = $this->input->get('device')) or ($this->device = '');
-		
 		
 		if($this->input->get('lr') == 1) {
 			$this->lr = "1";
