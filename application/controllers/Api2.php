@@ -96,20 +96,16 @@ class Api2 extends CI_Controller {
 	public function message() {
 		$cache_key = "$this->namespace_prefix:message:$this->device";
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
 			$result = $this->Tv2_model->getMessage();
 
-			$data = array('json' => new stdClass());
-			$data['json']->id = $result->id;
-			$data['json']->title = $result->title;
-			$data['json']->message = $result->message;
+			$data = new stdClass();
+			$data->id = $result->id;
+			$data->title = $result->title;
+			$data->message = $result->message;
 
 			$buttons = array();
 			if($this->device == 'android') {
@@ -124,91 +120,73 @@ class Api2 extends CI_Controller {
 				array_push($buttons, $this->Tv2_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
 			}
 
-			$data['json']->buttons = $buttons;
-			$json = $this->load->view('json', $data, TRUE);
+			$data->buttons = $buttons;
+			$json = json_encode($data);
 			$this->cache->redis->save($cache_key, $json, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($json);
 		}
-
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function advertise()
 	{
 		$cache_key = "$this->namespace_prefix:advertise:$this->device";
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
-			$data = array('json' => new stdClass());
-			$data['json']->delay_start = 1000;
-			$data['json']->ads = $this->Tv2_model->getAdvertise();
+			$data = new stdClass();
+			$data->delay_start = 1000;
+			$data->ads = $this->Tv2_model->getAdvertise();
 
-			$json = $this->load->view('json', $data, TRUE);
+			$json = json_encode($data);
 			$this->cache->redis->save($cache_key, $json, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($json);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function preroll_advertise()
 	{
 		$cache_key = "$this->namespace_prefix:preroll_advertise:$this->device";
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
-			$data = array('json' => new stdClass());
-			$data['json']->ads = $this->Tv2_model->getPrerollAdvertise();
-			$json = $this->load->view('json', $data, TRUE);
+			$data = new stdClass();
+			$data->ads = $this->Tv2_model->getPrerollAdvertise();
+			$json = json_encode($data);
 			$this->cache->redis->save($cache_key, $json, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($json);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function section() {
 		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespace_prefix, "section", $this->device, $this->country_cache, $this->lr);
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
 			$this->Tv2_model->setIsTH($this->isTH);
 			$this->Tv2_model->setLegalRights($this->lr);
 
-			$data = array('json' => new stdClass());
-			$data['json']->categories = $this->Tv2_model->getCategory();
-			$data['json']->channels = $this->Tv2_model->getChannel();
-			$data['json']->radios = $this->Tv2_model->getRadio();
+			$data = new stdClass();
+			$data->categories = $this->Tv2_model->getCategory();
+			$data->channels = $this->Tv2_model->getChannel();
+			$data->radios = $this->Tv2_model->getRadio();
 
-			$memData = $this->load->view('json', $data, TRUE);
-
+			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($memData);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function category($id = -1, $start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "category", $id, $start, $this->device, $this->country_cache, $this->lr);
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			if (-1 == $id) {
 				$memData = $this->_getCategory();
@@ -224,19 +202,15 @@ class Api2 extends CI_Controller {
 				$memData = $this->_getProgramByCategory($id, $start);
 			}
 			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($memData);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function channel($id = -1, $start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "channel", $id, $start, $this->device, $this->country_cache, $this->lr);
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			if (-1 == $id) {
 				$memData = $this->_getChannel();
@@ -245,24 +219,20 @@ class Api2 extends CI_Controller {
 				$memData = $this->_getProgramByChannel($id, $start);
 			}
 			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($memData);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function radio($id = -1, $start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "radio", $id, $start, $this->device, $this->country_cache, $this->lr);
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$memData = $this->_getRadio();
 			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($memData);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function search($start = 0)
@@ -270,14 +240,11 @@ class Api2 extends CI_Controller {
 		$keyword = $this->input->get('keyword');
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "search", $keyword, $start, $this->device, $this->country_cache, $this->lr);
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData) {
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else {
+		if(FALSE == $memData) {
 			$memData = $this->_getProgramBySearch($keyword, $start);
 			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($memData);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function all_program()
@@ -285,58 +252,44 @@ class Api2 extends CI_Controller {
 		$cache_key = "$this->namespace_prefix:all_program:$this->device:$this->country_cache";
 		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespace_prefix, "all_program", $this->device, $this->country_cache, $this->lr);
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
 			$this->Tv2_model->setIsTH($this->isTH);
 			$this->Tv2_model->setLegalRights($this->lr);
 
-			$data = array('json' => new stdClass());
-			$data['json']->programs = $this->Tv2_model->getAllProgram();
-
-			$memData = $this->load->view('json', $data, TRUE);
-
+			$data = new stdClass();
+			$data->programs = $this->Tv2_model->getAllProgram();
+			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($memData);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function whatsnew($start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "whatsnew", $start, $this->device, $this->country_cache, $this->lr);
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$memData = $this->_getProgramRecents($start);
 			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 			$this->storeKey($this->getWhatsNewKey(), $cache_key);
-			$this->output->set_content_type('application/json')->set_output($memData);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function tophits($start = 0)
 	{
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "tophits", $start, $this->device, $this->country_cache, $this->lr);
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$memData = $this->_getProgramTopHits($start);
 			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($memData);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	private function _getCategory()
@@ -346,22 +299,21 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
-		$data = array('json' => new stdClass());
-		$data['json']->categories = $this->Tv2_model->getCategory();
-		return $this->load->view('json', $data, TRUE);
+		$data = new stdClass();
+		$data->categories = $this->Tv2_model->getCategory();
+		return json_encode($data);
 	}
 
-	private function _getChannel() {
-
+	private function _getChannel()
+	{
 		$this->load->model('Tv2_model','', TRUE);
 		$this->Tv2_model->setDevice($this->device);
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
-		$data = array('json' => new stdClass());
-		$data['json']->channels = $this->Tv2_model->getChannel();
-		$data['json']->categories = $data['json']->channels;
-		return $this->load->view('json', $data, TRUE);
+		$data = new stdClass();
+		$data->channels = $this->Tv2_model->getChannel();
+		return json_encode($data);
 	}
 
 	private function _getRadio() {
@@ -369,9 +321,9 @@ class Api2 extends CI_Controller {
 		$this->load->model('Tv2_model','', TRUE);
 		$this->Tv2_model->setDevice($this->device);
 
-		$data = array('json' => new stdClass());
-		$data['json']->radios = $this->Tv2_model->getRadio();
-		return $this->load->view('json', $data, TRUE);
+		$data = new stdClass();
+		$data->radios = $this->Tv2_model->getRadio();
+		return json_encode($data);
 	}
 
 
@@ -381,10 +333,10 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
-		$data = array('json' => new stdClass());
-		$data['json']->programs = $this->Tv2_model->getWhatsNewProgram($start);
+		$data = new stdClass();
+		$data->programs = $this->Tv2_model->getWhatsNewProgram($start);
 
-		return $this->load->view('json', $data, TRUE);
+		return json_encode($data);
 	}
 
 	private function _getProgramTopHits($start = 0) {
@@ -393,10 +345,10 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
-		$data = array('json' => new stdClass());
-		$data['json']->programs = $this->Tv2_model->getProgramByTopHits($start);
+		$data = new stdClass();
+		$data->programs = $this->Tv2_model->getProgramByTopHits($start);
 
-		return $this->load->view('json', $data, TRUE);
+		return json_encode($data);
 	}
 
 	private function _getProgramByCategory($id, $start = 0) {
@@ -405,9 +357,9 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
-		$data = array('json' => new stdClass());
-		$data['json']->programs = $this->Tv2_model->getProgramByCategory($id, $start);
-		return $this->load->view('json', $data, TRUE);
+		$data = new stdClass();
+		$data->programs = $this->Tv2_model->getProgramByCategory($id, $start);
+		return json_encode($data);
 	}
 
 	private function _getProgramByChannel($id, $start = 0) {
@@ -416,9 +368,9 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
-		$data = array('json' => new stdClass());
-		$data['json']->programs = $this->Tv2_model->getProgramByChannel($id, $start);
-		return $this->load->view('json', $data, TRUE);
+		$data = new stdClass();
+		$data->programs = $this->Tv2_model->getProgramByChannel($id, $start);
+		return json_encode($data);
 	}
 
 	private function _getProgramBySearch($keyword, $start = 0) {
@@ -429,104 +381,96 @@ class Api2 extends CI_Controller {
 		$this->Tv2_model->setIsTH($this->isTH);
 		$this->Tv2_model->setLegalRights($this->lr);
 
-		$data = array('json' => new stdClass());
-		$data['json']->programs = $this->Tv2_model->getProgramSearch($keyword, $start);
-		return $this->load->view('json', $data, TRUE);
+		$data = new stdClass();
+		$data->programs = $this->Tv2_model->getProgramSearch($keyword, $start);
+		return json_encode($data);
 	}
 
 	public function episode($id, $start = 0) {
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "episode", $id, $start, $this->device, $this->country_cache, $this->lr);
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
 			$this->Tv2_model->setIsTH($this->isTH);
 			$this->Tv2_model->setLegalRights($this->lr);
 
-			$data = array('json' => new stdClass());
-			$data['json']->code = 200;
+			$data = new stdClass();
+			$data->code = 200;
 			if($start == 0) {
-				$data['json']->info = $this->Tv2_model->getProgramInfo($id);
+				$data->info = $this->Tv2_model->getProgramInfo($id);
 			}
-			$data['json']->episodes = $this->Tv2_model->getEpisode($id, $start);
-			$json = $this->load->view('json',$data,TRUE);
+			$data->episodes = $this->Tv2_model->getEpisode($id, $start);
+			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 			$this->storeKey($this->getProgramKey($id), $cache_key);
-			$this->output->set_content_type('application/json')->set_output($json);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function episode_raw($id, $start = 0) {
 		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "episode_raw", $id, $start, $this->device, $this->country_cache, $this->lr);
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$this->load->model('Tv2_model','', TRUE);
 			$this->Tv2_model->setDevice($this->device);
 			$this->Tv2_model->setIsTH($this->isTH);
 			$this->Tv2_model->setLegalRights($this->lr);
 
-			$data = array('json' => new stdClass());
-			$data['json']->code = 200;
+			$data = new stdClass();
+			$data->code = 200;
 			if($start == 0) {
-				$data['json']->info = $this->Tv2_model->getProgramInfo($id);
+				$data->info = $this->Tv2_model->getProgramInfo($id);
 			}
-			$data['json']->episodes = $this->Tv2_model->getEpisodeRaw($id, $start);
-			$json = $this->load->view('json',$data,TRUE);
+			$data->episodes = $this->Tv2_model->getEpisodeRaw($id, $start);
+			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 			$this->storeKey($this->getProgramKey($id), $cache_key);
-			$this->output->set_content_type('application/json')->set_output($json);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function program_info($id)
 	{
 		$cache_key = "$this->namespace_prefix:program_info:$id";
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$this->load->model('Tv2_model','', TRUE);
-			$data = array('json' => new stdClass());
-			$data['json'] = $this->Tv2_model->getProgramInfo($id);
-			$json = $this->load->view('json', $data, TRUE);
+			$data = new stdClass();
+			$data = $this->Tv2_model->getProgramInfo($id);
+			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $json, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($json);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function program_info_otv($id)
 	{
 		$cache_key = "$this->namespace_prefix:program_info_otv:$id";
 		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
+		if(FALSE == $memData)
 		{
 			$this->load->model('Tv2_model','', TRUE);
-			$data = array('json' => new stdClass());
-			$data['json'] = $this->Tv2_model->getProgramInfoOtv($id);
-			$json = $this->load->view('json', $data, TRUE);
+			$data = new stdClass();
+			$data = $this->Tv2_model->getProgramInfoOtv($id);
+			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $json, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($json);
 		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
+	public function view_episode($id)
+	{
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->viewEP($id);
 
+	}
+
+	############### private function ##############
+	
 	public function clearCache($program_id = -1)
 	{
 		if($program_id == -1)
@@ -541,14 +485,6 @@ class Api2 extends CI_Controller {
 			$this->cache->redis->delete($this->getProgramKey($program_id));
 		}
 	}
-
-	public function view_episode($id)
-	{
-		$this->load->model('Tv2_model','', TRUE);
-		$this->Tv2_model->viewEP($id);
-	}
-
-	############### private function ##############
 
 	public function encryptData()
 	{
