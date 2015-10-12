@@ -2,12 +2,11 @@
 
 class Api3 extends CI_Controller {
 	private $namespace_prefix = 'API3';
-	private $cache_time = 1200;
+	private $cache_time = 1800;
 	private $country_code = '';
-	private $country_cache = 'TH';
+	private $country_cache = '';
 	private $isTH = TRUE;
 	private $device = '';
-	private $lr = "0";
 
 	function __construct()
 	{
@@ -16,20 +15,18 @@ class Api3 extends CI_Controller {
 
 		($this->device = $this->input->get('device')) or ($this->device = '');
 
-		if($this->input->get('lr') == 1) {
-			$this->lr = "1";
-		}
-
 		// Location
-		$this->country_cache = 'TH';
-		$this->isTH = TRUE;
-		// if (array_key_exists('GEOIP_COUNTRY_CODE', $_SERVER)) {
-		// 	$this->country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
-		// 	if($this->country_code == 'TH') {
-		// 		$this->country_cache = 'TH';
-		// 		$this->isTH = TRUE;
-		// 	}
-		// }
+		if (ENVIRONMENT == 'development') {
+			$this->country_cache = 'TH';
+			$this->isTH = TRUE;			
+		}
+		if (array_key_exists('GEOIP_COUNTRY_CODE', $_SERVER)) {
+			$this->country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
+			if($this->country_code == 'TH') {
+				$this->country_cache = 'TH';
+				$this->isTH = TRUE;
+			}
+		}
 	}
 
 	public function index()
@@ -121,8 +118,8 @@ class Api3 extends CI_Controller {
 			}
 
 			$data->buttons = $buttons;
-			$json = json_encode($data);
-			$this->cache->redis->save($cache_key, $json, $this->cache_time);
+			$memData = json_encode($data);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 		}
 		$this->output->set_content_type('application/json')->set_output($memData);
 	}
@@ -139,8 +136,8 @@ class Api3 extends CI_Controller {
 			$data->delay_start = 1000;
 			$data->ads = $this->Tv3_model->getAdvertise();
 
-			$json = json_encode($data);
-			$this->cache->redis->save($cache_key, $json, $this->cache_time);
+			$memData = json_encode($data);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 		}
 		$this->output->set_content_type('application/json')->set_output($memData);
 	}
@@ -155,21 +152,20 @@ class Api3 extends CI_Controller {
 			$this->Tv3_model->setDevice($this->device);
 			$data = new stdClass();
 			$data->ads = $this->Tv3_model->getPrerollAdvertise();
-			$json = json_encode($data);
-			$this->cache->redis->save($cache_key, $json, $this->cache_time);
+			$memData = json_encode($data);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 		}
 		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function section() {
-		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespace_prefix, "section", $this->device, $this->country_cache, $this->lr);
+		$cache_key = sprintf("%s:%s:%s:%s", $this->namespace_prefix, "section", $this->device, $this->country_cache);
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE == $memData)
 		{
 			$this->load->model('Tv3_model','', TRUE);
 			$this->Tv3_model->setDevice($this->device);
 			$this->Tv3_model->setIsTH($this->isTH);
-			$this->Tv3_model->setLegalRights($this->lr);
 
 			$data = new stdClass();
 			$data->categories = $this->Tv3_model->getCategory();
@@ -184,7 +180,7 @@ class Api3 extends CI_Controller {
 
 	public function category($id = -1, $start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "category", $id, $start, $this->device, $this->country_cache, $this->lr);
+		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "category", $id, $start, $this->device, $this->country_cache);
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE == $memData)
 		{
@@ -208,7 +204,7 @@ class Api3 extends CI_Controller {
 
 	public function channel($id = -1, $start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "channel", $id, $start, $this->device, $this->country_cache, $this->lr);
+		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "channel", $id, $start, $this->device, $this->country_cache);
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE == $memData)
 		{
@@ -225,7 +221,7 @@ class Api3 extends CI_Controller {
 
 	public function radio($id = -1, $start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "radio", $id, $start, $this->device, $this->country_cache, $this->lr);
+		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "radio", $id, $start, $this->device, $this->country_cache);
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE == $memData)
 		{
@@ -238,7 +234,7 @@ class Api3 extends CI_Controller {
 	public function search($start = 0)
 	{
 		$keyword = $this->input->get('keyword');
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "search", $keyword, $start, $this->device, $this->country_cache, $this->lr);
+		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "search", $keyword, $start, $this->device, $this->country_cache);
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE == $memData) {
 			$memData = $this->_getProgramBySearch($keyword, $start);
@@ -250,14 +246,13 @@ class Api3 extends CI_Controller {
 	public function all_program()
 	{
 		$cache_key = "$this->namespace_prefix:all_program:$this->device:$this->country_cache";
-		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespace_prefix, "all_program", $this->device, $this->country_cache, $this->lr);
+		$cache_key = sprintf("%s:%s:%s:%s", $this->namespace_prefix, "all_program", $this->device, $this->country_cache);
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE == $memData)
 		{
 			$this->load->model('Tv3_model','', TRUE);
 			$this->Tv3_model->setDevice($this->device);
 			$this->Tv3_model->setIsTH($this->isTH);
-			$this->Tv3_model->setLegalRights($this->lr);
 
 			$data = new stdClass();
 			$data->programs = $this->Tv3_model->getAllProgram();
@@ -269,7 +264,7 @@ class Api3 extends CI_Controller {
 
 	public function whatsnew($start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "whatsnew", $start, $this->device, $this->country_cache, $this->lr);
+		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "whatsnew", $start, $this->device, $this->country_cache);
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE == $memData)
 		{
@@ -282,7 +277,7 @@ class Api3 extends CI_Controller {
 
 	public function tophits($start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "tophits", $start, $this->device, $this->country_cache, $this->lr);
+		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "tophits", $start, $this->device, $this->country_cache);
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE == $memData)
 		{
@@ -297,7 +292,6 @@ class Api3 extends CI_Controller {
 		$this->load->model('Tv3_model','', TRUE);
 		$this->Tv3_model->setDevice($this->device);
 		$this->Tv3_model->setIsTH($this->isTH);
-		$this->Tv3_model->setLegalRights($this->lr);
 
 		$data = new stdClass();
 		$data->categories = $this->Tv3_model->getCategory();
@@ -309,7 +303,6 @@ class Api3 extends CI_Controller {
 		$this->load->model('Tv3_model','', TRUE);
 		$this->Tv3_model->setDevice($this->device);
 		$this->Tv3_model->setIsTH($this->isTH);
-		$this->Tv3_model->setLegalRights($this->lr);
 
 		$data = new stdClass();
 		$data->channels = $this->Tv3_model->getChannel();
@@ -331,7 +324,6 @@ class Api3 extends CI_Controller {
 		$this->load->model('Tv3_model','', TRUE);
 		$this->Tv3_model->setDevice($this->device);
 		$this->Tv3_model->setIsTH($this->isTH);
-		$this->Tv3_model->setLegalRights($this->lr);
 
 		$data = new stdClass();
 		$data->programs = $this->Tv3_model->getWhatsNewProgram($start);
@@ -343,7 +335,6 @@ class Api3 extends CI_Controller {
 		$this->load->model('Tv3_model','', TRUE);
 		$this->Tv3_model->setDevice($this->device);
 		$this->Tv3_model->setIsTH($this->isTH);
-		$this->Tv3_model->setLegalRights($this->lr);
 
 		$data = new stdClass();
 		$data->programs = $this->Tv3_model->getProgramByTopHits($start);
@@ -355,7 +346,6 @@ class Api3 extends CI_Controller {
 		$this->load->model('Tv3_model','', TRUE);
 		$this->Tv3_model->setDevice($this->device);
 		$this->Tv3_model->setIsTH($this->isTH);
-		$this->Tv3_model->setLegalRights($this->lr);
 
 		$data = new stdClass();
 		$data->programs = $this->Tv3_model->getProgramByCategory($id, $start);
@@ -366,7 +356,6 @@ class Api3 extends CI_Controller {
 		$this->load->model('Tv3_model','', TRUE);
 		$this->Tv3_model->setDevice($this->device);
 		$this->Tv3_model->setIsTH($this->isTH);
-		$this->Tv3_model->setLegalRights($this->lr);
 
 		$data = new stdClass();
 		$data->programs = $this->Tv3_model->getProgramByChannel($id, $start);
@@ -379,7 +368,6 @@ class Api3 extends CI_Controller {
 		$this->load->model('Tv3_model','', TRUE);
 		$this->Tv3_model->setDevice($this->device);
 		$this->Tv3_model->setIsTH($this->isTH);
-		$this->Tv3_model->setLegalRights($this->lr);
 
 		$data = new stdClass();
 		$data->programs = $this->Tv3_model->getProgramSearch($keyword, $start);
@@ -387,14 +375,13 @@ class Api3 extends CI_Controller {
 	}
 
 	public function episode($id, $start = 0) {
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "episode", $id, $start, $this->device, $this->country_cache, $this->lr);
+		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "episode", $id, $start, $this->device, $this->country_cache);
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE == $memData)
 		{
 			$this->load->model('Tv3_model','', TRUE);
 			$this->Tv3_model->setDevice($this->device);
 			$this->Tv3_model->setIsTH($this->isTH);
-			$this->Tv3_model->setLegalRights($this->lr);
 
 			$data = new stdClass();
 			$data->code = 200;
@@ -403,21 +390,20 @@ class Api3 extends CI_Controller {
 			}
 			$data->episodes = $this->Tv3_model->getEpisode($id, $start);
 			$memData = json_encode($data);
-			$this->cache->redis->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 			$this->storeKey($this->getProgramKey($id), $cache_key);
 		}
 		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	public function episode_raw($id, $start = 0) {
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "episode_raw", $id, $start, $this->device, $this->country_cache, $this->lr);
+		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespace_prefix, "episode_raw", $id, $start, $this->device, $this->country_cache);
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE == $memData)
 		{
 			$this->load->model('Tv3_model','', TRUE);
 			$this->Tv3_model->setDevice($this->device);
 			$this->Tv3_model->setIsTH($this->isTH);
-			$this->Tv3_model->setLegalRights($this->lr);
 
 			$data = new stdClass();
 			$data->code = 200;
@@ -426,7 +412,7 @@ class Api3 extends CI_Controller {
 			}
 			$data->episodes = $this->Tv3_model->getEpisodeRaw($id, $start);
 			$memData = json_encode($data);
-			$this->cache->redis->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 			$this->storeKey($this->getProgramKey($id), $cache_key);
 		}
 		$this->output->set_content_type('application/json')->set_output($memData);
@@ -442,7 +428,7 @@ class Api3 extends CI_Controller {
 			$data = new stdClass();
 			$data = $this->Tv3_model->getProgramInfo($id);
 			$memData = json_encode($data);
-			$this->cache->redis->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 		}
 		$this->output->set_content_type('application/json')->set_output($memData);
 	}
@@ -457,7 +443,7 @@ class Api3 extends CI_Controller {
 			$data = new stdClass();
 			$data = $this->Tv3_model->getProgramInfoOtv($id);
 			$memData = json_encode($data);
-			$this->cache->redis->save($cache_key, $json, $this->cache_time);
+			$this->cache->redis->save($cache_key, $memData, $this->cache_time);
 		}
 		$this->output->set_content_type('application/json')->set_output($memData);
 	}

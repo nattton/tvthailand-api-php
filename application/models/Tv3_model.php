@@ -13,7 +13,6 @@ class Tv3_model extends CI_Model
 	private $deviceSupport = array('ios', 'android', 'wp', 's40', 'windows');
 
 	private $isTH = FALSE;
-	private $legalrights = FALSE;
 	private $device = ''; 
 	private $limit = 20;
 
@@ -35,10 +34,6 @@ class Tv3_model extends CI_Model
 
 	function isDeviceSupport() {
 		return in_array($this->device, $this->deviceSupport);
-	}
-	
-	function setLegalRights($lr){
-		$this->legalrights = ($lr == 1);
 	}
 	
 	function createButton($label ='', $url='') {
@@ -141,7 +136,7 @@ class Tv3_model extends CI_Model
 
 		$sql .= " FROM tv_category WHERE online = 1 AND v3 = 1";
 		
-		if(!$this->isTH || $this->legalrights) {
+		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
 		}
 		
@@ -227,10 +222,6 @@ class Tv3_model extends CI_Model
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
 		}
-		
-		if($this->legalrights) {
-			$sql .= " AND is_illegal = 0";
-		}
 
 		$sql .= " ORDER BY `title` ASC";
 
@@ -253,10 +244,6 @@ class Tv3_model extends CI_Model
 
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
-		}
-		
-		if($this->legalrights) {
-			$sql .= " AND is_illegal = 0";
 		}
 
 		$sql .= " ORDER BY `update_date` DESC";
@@ -282,10 +269,6 @@ class Tv3_model extends CI_Model
 
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
-		}
-		
-		if($this->legalrights) {
-			$sql .= " AND is_illegal = 0";
 		}
 
 		$sql .= " ORDER BY `view_count` DESC";
@@ -314,10 +297,6 @@ class Tv3_model extends CI_Model
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
 		}
-		
-		if($this->legalrights) {
-			$sql .= " AND is_illegal = 0";
-		}
 
 		$sql .= " ORDER BY `update_date` DESC";
 		$sql .= " LIMIT ".intval($start)." , $this->limit";
@@ -344,10 +323,6 @@ class Tv3_model extends CI_Model
 
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
-		}
-		
-		if($this->legalrights) {
-			$sql .= " AND is_illegal = 0";
 		}
 
 		$sql .= " ORDER BY `update_date` DESC";
