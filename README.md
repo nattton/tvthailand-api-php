@@ -1,10 +1,12 @@
 tvthailand-api
 ==============
 
+PHP framework : http://www.codeigniter.com/
+
 TV Thailand API with PHP
 
-Host : http://tv.makathon.com
+API : /api, /api2, /api3
 
-API : /api
+Extension : php5-redis
 
-API2 : /api2
+Server Support : PHP 5.5, HHVM
