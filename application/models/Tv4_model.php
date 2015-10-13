@@ -134,7 +134,7 @@ class Tv4_model extends CI_Model
 			$sql = "SELECT id, title, description, CASE thumbnail WHEN '' THEN '' ELSE CONCAT('$this->category_thumbnail_path', thumbnail) END AS thumbnail ";
 		}
 
-		$sql .= " FROM tv_category WHERE online = 1 AND v3 = 1";
+		$sql .= " FROM tv_category WHERE online = 1 AND is_otv = 1";
 		
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
