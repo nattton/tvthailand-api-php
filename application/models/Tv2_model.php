@@ -13,7 +13,10 @@ class Tv2_model extends CI_Model
 	private $deviceSupport = array('ios', 'android', 'wp', 's40', 'windows');
 
 	private $isTH = FALSE;
-	private $device = ''; 
+	private $device = '';
+	private $appId = '';
+	private $build = 0;
+	private $version = '';
 	private $limit = 20;
 
 	function __construct()
@@ -21,15 +24,16 @@ class Tv2_model extends CI_Model
 		parent::__construct();
 	}
 
-	function setDevice($device) {
+	function setClientInfo($countryCode, $device, $appId, $build, $version) {
+		$this->isTH = ($countryCode == 'TH');
 		$this->device = $device;
+		$this->appId = $appId;
+		$this->build = intval($build);
+		$this->version = $version;
+
 		if($this->device == 's40') {
 			$this->limit = 10;
 		}
-	}
-
-	function setIsTH($isTH) {
-		$this->isTH = $isTH;
 	}
 
 	function isDeviceSupport() {
