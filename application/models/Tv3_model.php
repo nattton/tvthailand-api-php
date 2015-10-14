@@ -72,8 +72,9 @@ class Tv3_model extends CI_Model
 		else {
 			$this->db->select("ad_name name, ad_url url, ad_time 'time', `interval`");
 			$this->db->where("ad_time >", 0);
-			$this->db->where("ad_url !=", "");
+			$this->db->where("ad_url !=", ""););
 		}
+		$this->db->where("v3", 1);
 		$this->db->from('ads');
 		$this->db->where('active', 1);
 		return $this->db->get()->result();

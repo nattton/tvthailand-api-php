@@ -74,6 +74,7 @@ class Tv4_model extends CI_Model
 			$this->db->where("ad_time >", 0);
 			$this->db->where("ad_url !=", "");
 		}
+		$this->db->where("v4", 1);
 		$this->db->from('ads');
 		$this->db->where('active', 1);
 		return $this->db->get()->result();
