@@ -166,7 +166,7 @@ class Api3 extends CI_Controller {
 	}
 
 	public function section() {
-		$cache_key = sprintf("%s:%s:%s:%s", $this->namespacePrefix, "section", $this->device, $this->countryCacheKey);
+		$cache_key = "$this->namespacePrefix:section:$this->device:$this->suffixCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -186,7 +186,7 @@ class Api3 extends CI_Controller {
 
 	public function category($id = -1, $start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespacePrefix, "category", $id, $start, $this->suffixCacheKey);
+		$cache_key = "$this->namespacePrefix:category:$id:$start:$this->suffixCacheKey:$this->build";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -210,7 +210,7 @@ class Api3 extends CI_Controller {
 
 	public function channel($id = -1, $start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespacePrefix, "channel", $id, $start, $this->device, $this->countryCacheKey);
+		$cache_key = "$this->namespacePrefix:channel:$id:$start:$this->device:$this->countryCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -227,7 +227,7 @@ class Api3 extends CI_Controller {
 
 	public function radio($id = -1, $start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespacePrefix, "radio", $id, $start, $this->device, $this->countryCacheKey);
+		$cache_key = "$this->namespacePrefix:radio:$id:$start:$this->suffixCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -240,7 +240,7 @@ class Api3 extends CI_Controller {
 	public function search($start = 0)
 	{
 		$keyword = $this->input->get('keyword');
-		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespacePrefix, "search", $keyword, $start, $this->suffixCacheKey);
+		$cache_key = "$this->namespacePrefix:search:$keyword:$start:$this->suffixCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData) {
 			$memData = $this->_getProgramBySearch($keyword, $start);
@@ -252,7 +252,6 @@ class Api3 extends CI_Controller {
 	public function all_program()
 	{
 		$cache_key = "$this->namespacePrefix:all_program:$this->suffixCacheKey";
-		$cache_key = sprintf("%s:%s:%s:%s", $this->namespacePrefix, "all_program", $this->device, $this->countryCacheKey);
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -269,7 +268,7 @@ class Api3 extends CI_Controller {
 
 	public function whatsnew($start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespacePrefix, "whatsnew", $start, $this->suffixCacheKey, $this->build);
+		$cache_key = "$this->namespacePrefix:whatsnew:$start:$this->suffixCacheKey:$this->build";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -282,7 +281,7 @@ class Api3 extends CI_Controller {
 
 	public function tophits($start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s", $this->namespacePrefix, "tophits", $start, $this->suffixCacheKey);
+		$cache_key = "$this->namespacePrefix:tophits:$start:$this->suffixCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -373,7 +372,7 @@ class Api3 extends CI_Controller {
 	}
 
 	public function episode($id, $start = 0) {
-		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespacePrefix, "episode", $id, $start, $this->device);
+		$cache_key = "$this->namespacePrefix:episode:$id:$start:$this->device";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -394,7 +393,7 @@ class Api3 extends CI_Controller {
 	}
 
 	public function episode_raw($id, $start = 0) {
-		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespacePrefix, "episode_raw", $id, $start, $this->device);
+		$cache_key = "$this->namespacePrefix:episode_raw:$id:$start:$this->device";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
