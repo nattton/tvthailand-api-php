@@ -133,7 +133,7 @@ class Api2 extends CI_Controller {
 
 	public function advertise()
 	{
-		$cache_key = "$this->namespacePrefix:advertise:$this->device";
+		$cache_key = "$this->namespacePrefix:advertise:$this->suffixCacheKey:$this->build";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -269,7 +269,7 @@ class Api2 extends CI_Controller {
 
 	public function whatsnew($start = 0)
 	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespacePrefix, "whatsnew", $start, $this->suffixCacheKey);
+		$cache_key = sprintf("%s:%s:%s:%s:%s:%s", $this->namespacePrefix, "whatsnew", $start, $this->suffixCacheKey, $this->build);
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
