@@ -13,7 +13,10 @@ class Tv3_model extends CI_Model
 	private $deviceSupport = array('ios', 'android', 'wp', 's40', 'windows');
 
 	private $isTH = FALSE;
-	private $device = ''; 
+	private $device = '';
+	private $appId = '';
+	private $build = 0;
+	private $version = '';
 	private $limit = 20;
 
 	function __construct()
@@ -21,12 +24,18 @@ class Tv3_model extends CI_Model
 		parent::__construct();
 	}
 
-	function setDevice($device) {
+	function setClientInfo($countryCode, $device, $appId, $build, $version) {
+		$this->isTH = ($countryCode == 'TH');
 		$this->device = $device;
+		$this->appId = $appId;
+		$this->build = intval($build);
+		$this->version = $version;
+
 		if($this->device == 's40') {
 			$this->limit = 10;
 		}
 	}
+
 
 	function setIsTH($isTH) {
 		$this->isTH = $isTH;
@@ -72,9 +81,11 @@ class Tv3_model extends CI_Model
 		else {
 			$this->db->select("ad_name name, ad_url url, ad_time 'time', `interval`");
 			$this->db->where("ad_time >", 0);
-			$this->db->where("ad_url !=", ""););
+			$this->db->where("ad_url !=", "");
 		}
 		$this->db->where("v3", 1);
+		$this->db->where("build_min <=", $this->build);
+		$this->db->where("build_max >=", $this->build);
 		$this->db->from('ads');
 		$this->db->where('active', 1);
 		return $this->db->get()->result();
@@ -246,7 +257,7 @@ class Tv3_model extends CI_Model
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
 		}
-
+		$sql .= " AND `build_min` <= $this->build AND `build_max` >= $this->build";
 		$sql .= " ORDER BY `update_date` DESC";
 		$sql .= " LIMIT ".intval($start)." , $this->limit";
 

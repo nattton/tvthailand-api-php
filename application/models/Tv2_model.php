@@ -79,6 +79,8 @@ class Tv2_model extends CI_Model
 			$this->db->where("ad_url !=", "");
 		}
 		$this->db->where("v2", 1);
+		$this->db->where("build_min <=", $this->build);
+		$this->db->where("build_max >=", $this->build);
 		$this->db->from('ads');
 		$this->db->where('active', 1);
 		return $this->db->get()->result();
@@ -250,6 +252,8 @@ class Tv2_model extends CI_Model
 		if(!$this->isTH) {
 			$sql .= " AND th_restrict = 0";
 		}
+		
+		$sql .= " AND `build_min` <= $this->build AND `build_max` >= $this->build";
 
 		$sql .= " ORDER BY `update_date` DESC";
 		$sql .= " LIMIT ".intval($start)." , $this->limit";
