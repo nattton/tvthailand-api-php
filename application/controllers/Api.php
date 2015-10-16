@@ -61,7 +61,7 @@ class Api extends CI_Controller {
 		else
 		{
 			$data = array('json' => new stdClass());
-			$data['json']->id = '201302200200';
+			$data['json']->id = '201502200200';
 			$data['json']->title = '*Notice*';
 			$data['json']->message = 'Welcome to TV Thailand for iOS';
 
@@ -100,8 +100,24 @@ class Api extends CI_Controller {
 			$this->load->model('Tv_model','', FALSE);
 			$buttons = array();
  			array_push($buttons, $this->Tv_model->createButton('Rating & Review','http://goo.gl/1BJYa'));
-/* 			array_push($buttons, $this->Tv_model->createButton('Read','http://goo.gl/NeDgB')); */
 			array_push($buttons, $this->Tv_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
+			
+			
+/*
+			$data = array('json' => new stdClass());
+			$data['json']->id = '201510800200';
+			$data['json']->title = '* Notice *';
+			$data['json']->message = 'Please Update TV Thailand';
+			$obj = new stdClass();
+			$obj->versionCode = 130;
+			$obj->apk = 'http://bit.ly/tvthp270';
+			$data['json']->app_version = $obj;
+
+			$this->load->model('Tv_model','', FALSE);
+			$buttons = array();
+ 			array_push($buttons, $this->Tv_model->createButton('Read Update TV Thailand','http://bit.ly/installtvthailand'));
+			array_push($buttons, $this->Tv_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
+*/
 
 			$data['json']->buttons = $buttons;
 
@@ -160,19 +176,10 @@ class Api extends CI_Controller {
 			$data['json']->ads = $this->Tv_model->getAds();
 
 			$pageAds = new stdClass();
-			if($this->isTH) {
-				$pageAds->program = "admob";
-				$pageAds->programlist = "admob";
-				$pageAds->ep = "admob";
-				$pageAds->player = "admob";
-			}
-			else {
-				$pageAds->program = "inmobi";
-				$pageAds->programlist = "inmobi";
-				$pageAds->ep = "inmobi";
-				$pageAds->player = "inmobi";
-			}
-
+			$pageAds->program = "";
+			$pageAds->programlist = "";
+			$pageAds->ep = "";
+			$pageAds->player = "";
 			$data['json']->pageAds = $pageAds;
 
 			$json = $this->load->view('json', $data, TRUE);
@@ -183,8 +190,7 @@ class Api extends CI_Controller {
 
 	public function getCategory()
 	{
-		// $cache_key = "$this->namespace_prefix:getCategory";
-		$cache_key = sprintf("%s:%s:%s", $this->namespace_prefix, "getCategory", $this->country_cache);
+		$cache_key = sprintf("%s:%s", $this->namespace_prefix, "getCategory");
 		$memData = $this->cache->redis->get($cache_key);
 		if(FALSE != $memData)
 		{
@@ -197,29 +203,6 @@ class Api extends CI_Controller {
 			$data = array('json' => new stdClass());
 			$data['json']->ads = $this->Tv_model->getAds();
 			$data['json']->categories = $this->Tv_model->getCategory();
-			$json = $this->load->view('json', $data, TRUE);
-			$this->cache->redis->save($cache_key, $json, $this->cache_time);
-			$this->output->set_content_type('application/json')->set_output($json);
-		}
-
-		/* $this->load->view('json',$data,TRUE) */;
-	}
-
-	public function getCategoryLao()
-	{
-		// $cache_key = "$this->namespace_prefix:getCategoryLao";
-		$cache_key = sprintf("%s:%s", $this->namespace_prefix, "getCategoryLao");
-		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
-		{
-			$this->load->model('Tv_model','', TRUE);
-			$data = array('json' => new stdClass());
-			$data['json']->ads = $this->Tv_model->getAds();
-			$data['json']->categories = $this->Tv_model->getCategoryLao();
 			$json = $this->load->view('json', $data, TRUE);
 			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 			$this->output->set_content_type('application/json')->set_output($json);
@@ -318,35 +301,6 @@ class Api extends CI_Controller {
 			$this->cache->redis->save($cache_key, $json, $this->cache_time);
 
 			if($cat_id == 0) $this->storeKey($this->getCategoryKey($cat_id), $cache_key);
-
-			$this->output->set_content_type('application/json')->set_output($json);
-		}
-
-/* 		$this->load->view('json',$data); */
-	}
-
-	public function getProgramLao($cat_id = 0, $start = 0)
-	{
-		$cache_key = sprintf("%s:%s:%s:%s:%s", $this->namespace_prefix, "getProgramLao", $cat_id, $start, $this->device);
-		$memData = $this->cache->redis->get($cache_key);
-		if(FALSE != $memData)
-		{
-			$this->output->set_content_type('application/json')->set_output($memData);
-		}
-		else
-		{
-			$this->load->model('Tv_model','', TRUE);
-			$this->Tv_model->setDevice($this->device);
-			$this->Tv_model->setIsTH($this->isTH);
-
-			$data = array('json' => new stdClass());
-			$data['json']->thumbnail_path = $this->Tv_model->thumbnail_path;
-			$data['json']->programs = $this->Tv_model->getProgramLao($cat_id, $start);
-			$json = $this->load->view('json',$data,TRUE);
-
-			$this->cache->redis->save($cache_key, $json, $this->cache_time);
-
-			$this->storeKey($this->getCategoryKey($cat_id), $cache_key);
 
 			$this->output->set_content_type('application/json')->set_output($json);
 		}

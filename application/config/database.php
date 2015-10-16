@@ -81,7 +81,7 @@ $db['default'] = array(
 	'password' => $url['pass'],
 	'database' => substr($url['path'],1),
 	'dbdriver' => 'mysqli',
-	'dbprefix' => 'tv_',
+	'dbprefix' => '',
 	'pconnect' => TRUE,
 	'db_debug' => (ENVIRONMENT !== 'production'),
 	'cache_on' => FALSE,
