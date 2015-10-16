@@ -359,10 +359,10 @@ class Tv2_model extends CI_Model
 		}
 		else
 		{
-			$sql = "SELECT shows.id, shows.title, CASE shows.thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', shows.thumbnail) END AS thumbnail, shows.`time`,
-		CASE SUBSTRING(CONVERT(shows.title USING utf8), 1, 1)  WHEN SUBSTRING(CONVERT('$keyword' USING utf8), 1, 1) THEN 1 ELSE 0 END AS occur,
-		is_otv, otv_id, otv_api_name, CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo   
-		FROM shows WHERE $special shows.title LIKE '%$keyword%' AND shows.th_restrict = 0
+			$sql = "SELECT shows.id, shows.title, CASE shows.thumbnail WHEN '' THEN '' ELSE CONCAT('$this->tv_thumbnail_path', shows.thumbnail) END AS thumbnail, shows.description,
+		CASE SUBSTRING(CONVERT(shows.title USING utf8), 1, 1)  WHEN SUBSTRING(CONVERT('$keyword' USING utf8), 1, 1) THEN 1 ELSE 0 END AS occur, 
+		is_otv, otv_id, otv_api_name, CASE otv_logo WHEN '' THEN '' ELSE CONCAT('$this->otv_logo_path', otv_logo) END AS otv_logo  
+		FROM shows WHERE $special shows.title LIKE '%$keyword%'  AND shows.th_restrict = 0 
 		ORDER BY occur DESC, shows.title ASC $limit";
 		}
 		
