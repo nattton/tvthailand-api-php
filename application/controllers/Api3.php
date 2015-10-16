@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Api3 extends CI_Controller {
-	private $namespacePrefix = 'API3';
+	private $namespacePrefix = 'API2';
 	private $cacheTime = 1800;
 	private $countryCode;
 	private $countryCacheKey;
@@ -102,9 +102,9 @@ class Api3 extends CI_Controller {
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
-			$this->load->model('Tv3_model','', TRUE);
-			$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
-			$result = $this->Tv3_model->getMessage();
+			$this->load->model('Tv2_model','', TRUE);
+			$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+			$result = $this->Tv2_model->getMessage();
 
 			$data = new stdClass();
 			$data->id = $result->id;
@@ -113,15 +113,15 @@ class Api3 extends CI_Controller {
 
 			$buttons = array();
 			if($this->device == 'android') {
-				array_push($buttons, $this->Tv3_model->createButton('Rating & Review','http://goo.gl/1BJYa'));
-				array_push($buttons, $this->Tv3_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
+				array_push($buttons, $this->Tv2_model->createButton('Rating & Review','http://goo.gl/1BJYa'));
+				array_push($buttons, $this->Tv2_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
 			}
 			elseif($this->device == 'ios') {
-				array_push($buttons, $this->Tv3_model->createButton('Rating & Review','https://itunes.apple.com/us/app/tv-thailand/id458429827?ls=1&mt=8'));
-				array_push($buttons, $this->Tv3_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
+				array_push($buttons, $this->Tv2_model->createButton('Rating & Review','https://itunes.apple.com/us/app/tv-thailand/id458429827?ls=1&mt=8'));
+				array_push($buttons, $this->Tv2_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
 			}
 			elseif($this->device == 'wp') {
-				array_push($buttons, $this->Tv3_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
+				array_push($buttons, $this->Tv2_model->createButton('Fan Page','https://www.facebook.com/TV.Thailand'));
 			}
 
 			$data->buttons = $buttons;
@@ -137,11 +137,11 @@ class Api3 extends CI_Controller {
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
-			$this->load->model('Tv3_model','', TRUE);
-			$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+			$this->load->model('Tv2_model','', TRUE);
+			$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 			$data = new stdClass();
 			$data->delay_start = 1000;
-			$data->ads = $this->Tv3_model->getAdvertise();
+			$data->ads = $this->Tv2_model->getAdvertise();
 
 			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $memData, $this->cacheTime);
@@ -155,10 +155,10 @@ class Api3 extends CI_Controller {
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
-			$this->load->model('Tv3_model','', TRUE);
-			$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+			$this->load->model('Tv2_model','', TRUE);
+			$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 			$data = new stdClass();
-			$data->ads = $this->Tv3_model->getPrerollAdvertise();
+			$data->ads = $this->Tv2_model->getPrerollAdvertise();
 			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $memData, $this->cacheTime);
 		}
@@ -170,13 +170,13 @@ class Api3 extends CI_Controller {
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
-			$this->load->model('Tv3_model','', TRUE);
-			$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+			$this->load->model('Tv2_model','', TRUE);
+			$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 			$data = new stdClass();
-			$data->categories = $this->Tv3_model->getCategory();
-			$data->channels = $this->Tv3_model->getChannel();
-			$data->radios = $this->Tv3_model->getRadio();
+			$data->categories = $this->Tv2_model->getCategory();
+			$data->channels = $this->Tv2_model->getChannel();
+			$data->radios = $this->Tv2_model->getRadio();
 
 			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $memData, $this->cacheTime);
@@ -255,11 +255,11 @@ class Api3 extends CI_Controller {
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
-			$this->load->model('Tv3_model','', TRUE);
-			$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+			$this->load->model('Tv2_model','', TRUE);
+			$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 			$data = new stdClass();
-			$data->programs = $this->Tv3_model->getAllProgram();
+			$data->programs = $this->Tv2_model->getAllProgram();
 			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $memData, $this->cacheTime);
 		}
@@ -293,81 +293,81 @@ class Api3 extends CI_Controller {
 
 	private function _getCategory()
 	{
-		$this->load->model('Tv3_model','', TRUE);
-		$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 		$data = new stdClass();
-		$data->categories = $this->Tv3_model->getCategory();
+		$data->categories = $this->Tv2_model->getCategory();
 		return json_encode($data);
 	}
 
 	private function _getChannel()
 	{
-		$this->load->model('Tv3_model','', TRUE);
-		$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 		$data = new stdClass();
-		$data->channels = $this->Tv3_model->getChannel();
+		$data->channels = $this->Tv2_model->getChannel();
 		return json_encode($data);
 	}
 
 	private function _getRadio() {
 
-		$this->load->model('Tv3_model','', TRUE);
-		$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 		$data = new stdClass();
-		$data->radios = $this->Tv3_model->getRadio();
+		$data->radios = $this->Tv2_model->getRadio();
 		return json_encode($data);
 	}
 
 
 	private function _getProgramRecents($start = 0) {
-		$this->load->model('Tv3_model','', TRUE);
-		$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 		$data = new stdClass();
-		$data->programs = $this->Tv3_model->getWhatsNewProgram($start);
+		$data->programs = $this->Tv2_model->getWhatsNewProgram($start);
 
 		return json_encode($data);
 	}
 
 	private function _getProgramTopHits($start = 0) {
-		$this->load->model('Tv3_model','', TRUE);
-		$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 		$data = new stdClass();
-		$data->programs = $this->Tv3_model->getProgramByTopHits($start);
+		$data->programs = $this->Tv2_model->getProgramByTopHits($start);
 
 		return json_encode($data);
 	}
 
 	private function _getProgramByCategory($id, $start = 0) {
-		$this->load->model('Tv3_model','', TRUE);
-		$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 		$data = new stdClass();
-		$data->programs = $this->Tv3_model->getProgramByCategory($id, $start);
+		$data->programs = $this->Tv2_model->getProgramByCategory($id, $start);
 		return json_encode($data);
 	}
 
 	private function _getProgramByChannel($id, $start = 0) {
-		$this->load->model('Tv3_model','', TRUE);
-		$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 		$data = new stdClass();
-		$data->programs = $this->Tv3_model->getProgramByChannel($id, $start);
+		$data->programs = $this->Tv2_model->getProgramByChannel($id, $start);
 		return json_encode($data);
 	}
 
 	private function _getProgramBySearch($keyword, $start = 0) {
 		$keyword = $this->input->get('keyword');
 
-		$this->load->model('Tv3_model','', TRUE);
-		$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 		$data = new stdClass();
-		$data->programs = $this->Tv3_model->getProgramSearch($keyword, $start);
+		$data->programs = $this->Tv2_model->getProgramSearch($keyword, $start);
 		return json_encode($data);
 	}
 
@@ -376,15 +376,15 @@ class Api3 extends CI_Controller {
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
-			$this->load->model('Tv3_model','', TRUE);
-			$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+			$this->load->model('Tv2_model','', TRUE);
+			$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 			$data = new stdClass();
 			$data->code = 200;
 			if($start == 0) {
-				$data->info = $this->Tv3_model->getProgramInfo($id);
+				$data->info = $this->Tv2_model->getProgramInfo($id);
 			}
-			$data->episodes = $this->Tv3_model->getEpisode($id, $start);
+			$data->episodes = $this->Tv2_model->getEpisode($id, $start);
 			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $memData, $this->cacheTime);
 			$this->storeKey($this->getProgramKey($id), $cache_key);
@@ -397,15 +397,15 @@ class Api3 extends CI_Controller {
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
-			$this->load->model('Tv3_model','', TRUE);
-			$this->Tv3_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
+			$this->load->model('Tv2_model','', TRUE);
+			$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 			$data = new stdClass();
 			$data->code = 200;
 			if($start == 0) {
-				$data->info = $this->Tv3_model->getProgramInfo($id);
+				$data->info = $this->Tv2_model->getProgramInfo($id);
 			}
-			$data->episodes = $this->Tv3_model->getEpisodeRaw($id, $start);
+			$data->episodes = $this->Tv2_model->getEpisodeRaw($id, $start);
 			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $memData, $this->cacheTime);
 			$this->storeKey($this->getProgramKey($id), $cache_key);
@@ -419,9 +419,9 @@ class Api3 extends CI_Controller {
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
-			$this->load->model('Tv3_model','', TRUE);
+			$this->load->model('Tv2_model','', TRUE);
 			$data = new stdClass();
-			$data = $this->Tv3_model->getProgramInfo($id);
+			$data = $this->Tv2_model->getProgramInfo($id);
 			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $memData, $this->cacheTime);
 		}
@@ -434,9 +434,9 @@ class Api3 extends CI_Controller {
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
-			$this->load->model('Tv3_model','', TRUE);
+			$this->load->model('Tv2_model','', TRUE);
 			$data = new stdClass();
-			$data = $this->Tv3_model->getProgramInfoOtv($id);
+			$data = $this->Tv2_model->getProgramInfoOtv($id);
 			$memData = json_encode($data);
 			$this->cache->redis->save($cache_key, $memData, $this->cacheTime);
 		}
@@ -445,8 +445,8 @@ class Api3 extends CI_Controller {
 
 	public function view_episode($id)
 	{
-		$this->load->model('Tv3_model','', TRUE);
-		$this->Tv3_model->viewEP($id);
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->viewEP($id);
 
 	}
 
@@ -469,7 +469,7 @@ class Api3 extends CI_Controller {
 
 	public function encryptData()
 	{
-		$this->load->model('Tv3_model','', TRUE);
-		$this->Tv3_model->encryptData();
+		$this->load->model('Tv2_model','', TRUE);
+		$this->Tv2_model->encryptData();
 	}
 }
