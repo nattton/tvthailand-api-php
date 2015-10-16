@@ -210,6 +210,11 @@ class Api extends CI_Controller {
 
 		/* $this->load->view('json',$data,TRUE) */;
 	}
+	
+	public function getCategoryLao()
+	{
+		$this->getCategory();
+	}
 
 	public function getCategoryV2()
 	{
@@ -306,6 +311,10 @@ class Api extends CI_Controller {
 		}
 
 /* 		$this->load->view('json',$data); */
+	}
+	
+	public function getProgramLao($cat_id = 0, $start = 0) {
+		$this->getProgram($cat_id, $start);
 	}
 
 	public function getWhatsNew($start = 0)

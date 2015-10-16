@@ -166,7 +166,7 @@ WHERE episodes.banned = 0 AND shows.is_online = 1  $where GROUP BY episodes.show
 		}
 		elseif(100 == $cat_id)
 		{
-			$this->db->select('program_id, title, thumbnail, description `time`');
+			$this->db->select('id program_id, title, thumbnail, description `time`');
 			$this->db->from('shows');
 			$this->db->where('is_online', 1);
 
