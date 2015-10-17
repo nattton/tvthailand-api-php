@@ -38,8 +38,8 @@ class View extends CI_Controller {
 		// echo 'index.php/view/video/'.$id.'_'.md5($key);
 		echo $id.'_'.md5($key);
 		$data = $this->Tv_model->getProgramlistDetail($id);
-		$data['title'] = 'TV Thailand on Web : <strong>'.$data['program_title']
-			.'</strong> ตอนที่ '.$data['programlist_ep'].' วันที่ '.$data['programlist_date'].' - '.$data['programlist_epname'];
+		$data['title'] = 'TV Thailand on Web : <strong>'.$data['show_title']
+			.'</strong> ตอนที่ '.$data['ep'].' วันที่ '.$data['date'].' - '.$data['title'];
 			// .' View : '.number_format($data['programlist_count']);
 
 			// $data['title'] = 'TV Thailand on Web : '.$data['program_title'];

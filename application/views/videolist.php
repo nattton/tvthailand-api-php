@@ -16,14 +16,14 @@ if(stristr($ua, "Android") || stristr($ua, "iPhone") || stristr($ua, "Windows CE
  }
 
 
-if(!empty($programlist_ep_name)) {
-	$epname = " - ".$programlist_ep_name;
+if(!empty($title)) {
+	$title = " - ".$title;
 }
 else
 {
-	$epname = '';
+	$title = '';
 }
-$youtubes = explode(',',$programlist_youtube);
+$videos = explode(',', $video);
 
 ?>
 
@@ -32,53 +32,51 @@ $youtubes = explode(',',$programlist_youtube);
 <div>
 
 <?php
-if($programlist_src_type == 0)
+if($src_type == 0)
 {
-	foreach ($youtubes as $key => $value) {
+	foreach ($videos as $key => $value) {
 		if ($key < 4) {
 			echo img('http://i.ytimg.com/vi/'.$value.'/1.jpg');
 		}
 	}
-	// echo img('http://i.ytimg.com/vi/'.$youtubes[0].'/1.jpg');
-	// echo '<img src="http://i.ytimg.com/vi/'.$youtubes[0].'/1.jpg" height="100" alt="" />';
 }
-elseif($programlist_src_type == 1)
+elseif($src_type == 1)
 {
-	echo '<img src="http://www.dailymotion.com/thumbnail/160x120/video/'.$youtubes[0].'" height="100" alt="" />';
+	echo '<img src="http://www.dailymotion.com/thumbnail/160x120/video/'.$videos[0].'" height="100" alt="" />';
 }
 ?>
 </div>
 <?php	
-		$count_youtube = count($youtubes);
-		for($i=0;$i<$count_youtube;$i++){
+		$count_video = count($videos);
+		for($i=0;$i<$count_video;$i++){
 		
-		echo "<br />ตอนที่ ".$programlist_ep.$epname." - ".($i+1).'/'.$count_youtube;
-if($programlist_src_type == 0)
+		echo "<br />ตอนที่ ".$ep.$title." - ".($i+1).'/'.$count_video;
+if($src_type == 0)
 {
 		echo '<br /><object style="width: '.$width.'px;height: '.$height.'px;">
-<param name="movie" value="http://www.youtube.com/v/'.$youtubes[$i].'?version=3&autoplay=0&feature=player_embedded">
+<param name="movie" value="http://www.youtube.com/v/'.$videos[$i].'?version=3&autoplay=0&feature=player_embedded">
 <param name="allowFullScreen" value="true">
 <param name="allowScriptAccess" value="always">
-<embed src="http://www.youtube.com/v/'.$youtubes[$i].'?version=3&autoplay=0&feature=player_embedded" 
+<embed src="http://www.youtube.com/v/'.$videos[$i].'?version=3&autoplay=0&feature=player_embedded" 
 type="application/x-shockwave-flash" 
 allowfullscreen="true" allowScriptAccess="always" width="'.$width.'" height="'.$height.'"></object></center><br />';
 }
-elseif($programlist_src_type == 1)
+elseif($src_type == 1)
 {
-	echo '<br /><iframe frameborder="0" width="'.$width.'" height="'.$height.'" src="http://www.dailymotion.com/embed/video/'.$youtubes[$i].'"></iframe>';
+	echo '<br /><iframe frameborder="0" width="'.$width.'" height="'.$height.'" src="http://www.dailymotion.com/embed/video/'.$videos[$i].'"></iframe>';
 	
 }
-elseif($programlist_src_type == 14 || $programlist_src_type == 15)
+elseif($src_type == 14 || $src_type == 15)
 {
-	echo '<br /><a target="_blank" href="http://video.mthai.com/cool/player/'.$youtubes[$i].'.html">Link</a>';
-	echo '<br />Password : '.$programlist_password;
+	echo '<br /><a target="_blank" href="http://video.mthai.com/cool/player/'.$videos[$i].'.html">Link</a>';
+	echo '<br />Password : '.$password;
 }
 		}
 ?>
 </div>
 <?php
-if(isset($programlist_id)){
-		$sql = "UPDATE `tv_programlist` SET programlist_count = programlist_count + 1 WHERE tv_programlist.programlist_id = '$programlist_id'";
+if(isset($id)){
+		$sql = "UPDATE `episodes` SET view_count = view_count + 1 WHERE episodes.id = '$id'";
 		$db->query($sql);
 }
 

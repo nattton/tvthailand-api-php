@@ -286,7 +286,7 @@ WHERE episodes.banned = 0 AND shows.is_online = 1  $where GROUP BY episodes.show
 	{
 		$programlist_id = intval($programlist_id);
 		
-		$sql = "SELECT shows.title, shows.thumbnail, episodes.ep, episodes.title, episodes.video, episodes.date, episodes.view_count, episodes.src_type
+		$sql = "SELECT shows.title show_title, shows.thumbnail, episodes.ep, episodes.title, episodes.video, episodes.date, episodes.view_count, episodes.src_type
 		FROM  `episodes` 
 		INNER JOIN  `shows` ON  `shows`.id =  `episodes`.show_id
 		WHERE `episodes`.id =  '$programlist_id'";
