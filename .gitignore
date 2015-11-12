@@ -4,3 +4,8 @@
 */cache/*
 */cache/!index.html
 *.swp
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
