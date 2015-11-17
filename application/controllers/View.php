@@ -15,7 +15,11 @@ class View extends CI_Controller {
 	
 	public function video($id = '')
 	{
+		$this->load->helper('url');
 		$id = explode('_',$id);
+		redirect('http://www.tvthailand.me/watch/'.$id[0].'/0', 'location', 301);
+		return;
+		
 		$key = 'v!3wPr0gr@ml!$t0nW3b'.$id[0];
 		if(md5($key) == $id[1]) {
 			$data = $this->Tv_model->getProgramlistDetail($id[0]);
