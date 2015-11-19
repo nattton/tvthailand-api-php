@@ -61,20 +61,19 @@ class Api3 extends CI_Controller {
 		return "API_SHOW:$id";
 	}
 
-	private function storeKey($cache_key, $value) {
-		return $this->cache->redis->rPush($cache_key, $value);
+	private function storeKey($key, $hashKey) {
+		return $this->cache->redis->hSet($key, $hashKey, 1);
 	}
 
-	public function showKey($cache_key) {
-		$memData = $this->cache->redis->lAll($cache_key);
-		return $memData;
+	public function showKey($key) {
+		return $this->cache->redis->hKeys($key);
 	}
 
 	public function showCategoryKey($id) {
 		$key =  $this->getCategoryKey($id);
 		echo $key;
 		echo "<br/>";
-		$memData = $this->cache->redis->lAll($key);
+		$memData = $this->cache->redis->hKeys($key);
 		echo var_dump($memData);
 		return $memData;
 	}
@@ -83,7 +82,7 @@ class Api3 extends CI_Controller {
 		$key =  $this->getWhatsNewKey();
 		echo $key;
 		echo "<br/>";
-		$memData = $this->cache->redis->lAll($key);
+		$memData = $this->cache->redis->hKeys($key);
 		echo var_dump($memData);
 		return $memData;
 	}
@@ -92,13 +91,13 @@ class Api3 extends CI_Controller {
 		$key =  $this->getProgramKey($id);
 		echo $key;
 		echo "<br/>";
-		$memData = $this->cache->redis->lAll($key);
+		$memData = $this->cache->redis->hKeys($key);
 		echo var_dump($memData);
 		return $memData;
 	}
 
 	public function message() {
-		$cache_key = "$this->namespacePrefix:message/$this->device";
+		$cache_key = "$this->namespacePrefix/message:$this->device";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -133,7 +132,7 @@ class Api3 extends CI_Controller {
 
 	public function advertise()
 	{
-		$cache_key = "$this->namespacePrefix:advertise/$this->suffixCacheKey/$this->build";
+		$cache_key = "$this->namespacePrefix/advertise:$this->suffixCacheKey/$this->build";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -151,7 +150,7 @@ class Api3 extends CI_Controller {
 
 	public function preroll_advertise()
 	{
-		$cache_key = "$this->namespacePrefix:preroll_advertise/$this->device";
+		$cache_key = "$this->namespacePrefix/preroll_advertise:$this->device";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -166,7 +165,7 @@ class Api3 extends CI_Controller {
 	}
 
 	public function section() {
-		$cache_key = "$this->namespacePrefix:section/$this->device/$this->suffixCacheKey";
+		$cache_key = "$this->namespacePrefix/section:$this->device/$this->suffixCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -186,7 +185,7 @@ class Api3 extends CI_Controller {
 
 	public function category($id = -1, $start = 0)
 	{
-		$cache_key = "$this->namespacePrefix:category/$id/$start/$this->suffixCacheKey/$this->build";
+		$cache_key = "$this->namespacePrefix/category:$id/$start/$this->suffixCacheKey/$this->build";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -210,7 +209,7 @@ class Api3 extends CI_Controller {
 
 	public function channel($id = -1, $start = 0)
 	{
-		$cache_key = "$this->namespacePrefix:channel/$id/$start/$this->device/$this->countryCacheKey";
+		$cache_key = "$this->namespacePrefix/channel:$id/$start/$this->device/$this->countryCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -227,7 +226,7 @@ class Api3 extends CI_Controller {
 
 	public function radio($id = -1, $start = 0)
 	{
-		$cache_key = "$this->namespacePrefix:radio/$id/$start/$this->suffixCacheKey";
+		$cache_key = "$this->namespacePrefix/radio:$id/$start/$this->suffixCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -240,7 +239,7 @@ class Api3 extends CI_Controller {
 	public function search($start = 0)
 	{
 		$keyword = $this->input->get('keyword');
-		$cache_key = "$this->namespacePrefix:search/$keyword/$start/$this->suffixCacheKey";
+		$cache_key = "$this->namespacePrefix/search:$keyword/$start/$this->suffixCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData) {
 			$memData = $this->_getProgramBySearch($keyword, $start);
@@ -251,7 +250,7 @@ class Api3 extends CI_Controller {
 
 	public function all_program()
 	{
-		$cache_key = "$this->namespacePrefix:all_program/$this->suffixCacheKey";
+		$cache_key = "$this->namespacePrefix/all_program:$this->suffixCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -268,7 +267,7 @@ class Api3 extends CI_Controller {
 
 	public function whatsnew($start = 0)
 	{
-		$cache_key = "$this->namespacePrefix:whatsnew/$start/$this->suffixCacheKey/$this->build";
+		$cache_key = "$this->namespacePrefix/whatsnew:$start/$this->suffixCacheKey/$this->build";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -281,7 +280,7 @@ class Api3 extends CI_Controller {
 
 	public function tophits($start = 0)
 	{
-		$cache_key = "$this->namespacePrefix:tophits/$start/$this->suffixCacheKey";
+		$cache_key = "$this->namespacePrefix/tophits:$start/$this->suffixCacheKey";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -372,7 +371,7 @@ class Api3 extends CI_Controller {
 	}
 
 	public function episode($id, $start = 0) {
-		$cache_key = "$this->namespacePrefix:episode/$id/$start/$this->device";
+		$cache_key = "$this->namespacePrefix/episode:$id/$start/$this->device";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -393,7 +392,7 @@ class Api3 extends CI_Controller {
 	}
 
 	public function episode_raw($id, $start = 0) {
-		$cache_key = "$this->namespacePrefix:episode_raw/$id/$start/$this->device";
+		$cache_key = "$this->namespacePrefix/episode_raw:$id/$start/$this->device";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -415,7 +414,7 @@ class Api3 extends CI_Controller {
 
 	public function program_info($id)
 	{
-		$cache_key = "$this->namespacePrefix:program_info/$id";
+		$cache_key = "$this->namespacePrefix/program_info:$id";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
@@ -430,7 +429,7 @@ class Api3 extends CI_Controller {
 
 	public function program_info_otv($id)
 	{
-		$cache_key = "$this->namespacePrefix:program_info_otv/$id";
+		$cache_key = "$this->namespacePrefix/program_info_otv:$id";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
 		{
