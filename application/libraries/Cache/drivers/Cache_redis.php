@@ -293,6 +293,48 @@ class CI_Cache_redis extends CI_Driver
 	{
 		return $this->_redis->lRange($key, 0, -1);
 	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * hSet Adds a value to the hash stored at key. If this value is already in the hash, FALSE is returned.
+	 *
+	 * @param	string	$key
+	 * @param	string	$hashKey
+ 	 * @param	string	$value
+	 * @return	LONG 1 if value didn't exist and was added successfully, 0 if the value was already present and was replaced, FALSE if there was an error.
+	 */
+	public function hSet($key, $hashKey, $value)
+	{
+		return $this->_redis->hSet($key, $hashKey, $value);
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * hKeys Gets a value from the hash stored at key. If the hash table doesn't exist, or the key doesn't exist, FALSE is returned.
+	 *
+	 * @param	string	$key
+	 * @return	An array of elements, the keys of the hash. This works like PHP's array_keys().
+	 */
+	public function hKeys($key)
+	{
+		return $this->_redis->hKeys($key);
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * hDel Removes a value from the hash stored at key. If the hash table doesn't exist, or the key doesn't exist, FALSE is returned.
+	 *
+	 * @param	string	$key
+	 * @param	string	$hashKey
+	 * @return	BOOL TRUE in case of success, FALSE in case of failure
+	 */
+	public function hDel($key, $hashKey)
+	{
+		return $this->_redis->hDel($key, $hashKey);
+	}
 
 	// ------------------------------------------------------------------------
 
