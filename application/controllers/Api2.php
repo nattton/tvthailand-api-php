@@ -267,15 +267,7 @@ class Api2 extends CI_Controller {
 
 	public function whatsnew($start = 0)
 	{
-		$cache_key = "$this->namespacePrefix/whatsnew:$start/$this->suffixCacheKey/$this->build";
-		$memData = $this->cache->redis->get($cache_key);
-		if(!$memData)
-		{
-			$memData = $this->_getProgramRecents($start);
-			$this->cache->redis->save($cache_key, $memData, $this->cacheTime);
-			$this->storeKey($this->getWhatsNewKey(), $cache_key);
-		}
-		$this->output->set_content_type('application/json')->set_output($memData);
+		$this->category('recents', $start);
 	}
 
 	public function tophits($start = 0)
