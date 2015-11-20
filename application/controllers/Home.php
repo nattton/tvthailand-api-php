@@ -36,7 +36,9 @@ class Home extends CI_Controller {
 	
 	public function geoip()
 	{
-		echo $_SERVER['GEOIP_COUNTRY_CODE'].' - '.$_SERVER['GEOIP_COUNTRY_NAME'];
+		echo 'REMOTE_ADDR:'.$_SERVER['REMOTE_ADDR'].'<br/>';
+		echo 'HTTP_X_FORWARDED_FOR:'.$_SERVER['HTTP_X_FORWARDED_FOR'].'<br/>';
+		echo $_SERVER['GEOIP_COUNTRY_CODE'].' - '.$_SERVER['GEOIP_COUNTRY_NAME'].'<br/>';
 	}
 }
 
