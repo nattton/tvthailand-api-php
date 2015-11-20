@@ -10,6 +10,7 @@ class Api3 extends CI_Controller {
 	private $build = 0;
 	private $version;
 	private $suffixCacheKey;
+	private $limitOffset = 1000;
 
 	function __construct()
 	{
@@ -62,7 +63,7 @@ class Api3 extends CI_Controller {
 	}
 
 	private function storeKey($key, $hashKey) {
-		return $this->cache->redis->hSet($key, $hashKey, 1);
+		return $this->cache->redis->hSet($key, $hashKey, 0);
 	}
 
 	public function showKey($key) {
@@ -185,6 +186,9 @@ class Api3 extends CI_Controller {
 
 	public function category($id = -1, $start = 0)
 	{
+		if ($start > $this->limitOffset) {
+			$start = $this->limitOffset;
+		} 
 		$cache_key = "$this->namespacePrefix/category:$id/$start/$this->suffixCacheKey/$this->build";
 		$memData = $this->cache->redis->get($cache_key);
 		if(!$memData)
@@ -272,7 +276,14 @@ class Api3 extends CI_Controller {
 
 	public function tophits($start = 0)
 	{
-		$this->category('tophits', $start);
+		$cache_key = "$this->namespacePrefix/tophits:$start/$this->suffixCacheKey";
+		$memData = $this->cache->redis->get($cache_key);
+		if(!$memData)
+		{
+			$memData = $this->_getProgramTopHits($start);
+			$this->cache->redis->save($cache_key, $memData, $this->cacheTime);
+		}
+		$this->output->set_content_type('application/json')->set_output($memData);
 	}
 
 	private function _getCategory()
@@ -311,7 +322,7 @@ class Api3 extends CI_Controller {
 		$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 		$data = new stdClass();
-		$data->programs = $this->Tv2_model->getWhatsNewProgram($start);
+		$data->programs = ($start < $this->limitOffset) ? $this->Tv2_model->getWhatsNewProgram($start) : array();
 
 		return json_encode($data);
 	}
@@ -321,7 +332,7 @@ class Api3 extends CI_Controller {
 		$this->Tv2_model->setClientInfo($this->countryCode, $this->device, $this->appId, $this->build, $this->version);
 
 		$data = new stdClass();
-		$data->programs = $this->Tv2_model->getProgramByTopHits($start);
+		$data->programs = ($start < $this->limitOffset) ? $this->Tv2_model->getProgramByTopHits($start) : array();
 
 		return json_encode($data);
 	}
