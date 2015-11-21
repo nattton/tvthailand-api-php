@@ -376,7 +376,7 @@ class Api3 extends CI_Controller {
 
 			$data = new stdClass();
 			$data->code = 200;
-			if($start == 0) {
+			if($start == 0 || $this->device == 'android') {
 				$data->info = $this->Tv2_model->getProgramInfo($id);
 			}
 			$data->episodes = $this->Tv2_model->getEpisode($id, $start);
