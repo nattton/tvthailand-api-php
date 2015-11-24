@@ -38,6 +38,10 @@ class View extends CI_Controller {
 	
 	public function viewProgramlist($id = '')
 	{
+		$this->load->helper('url');
+		redirect('http://www.tvthailand.me/watch/'.$id.'/0', 'location', 301);
+		return;
+		
 		$key = 'v!3wPr0gr@ml!$t0nW3b'.$id;
 		// echo 'index.php/view/video/'.$id.'_'.md5($key);
 		echo $id.'_'.md5($key);
