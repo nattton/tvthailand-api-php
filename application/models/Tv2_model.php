@@ -34,6 +34,10 @@ class Tv2_model extends CI_Model
 		if($this->device == 's40') {
 			$this->limit = 10;
 		}
+		
+		if($this->device == 'android') {
+			$this->isTH = TRUE;
+		}
 	}
 
 	function isDeviceSupport() {
