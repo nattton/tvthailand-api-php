@@ -10,8 +10,13 @@
 		"irc": "irc://irc.freenode.net/codeigniter",
 		"source": "https://github.com/bcit-ci/CodeIgniter"
 	},
+	"suggest": {
+		"ext-redis": "The php redis extension https://github.com/nicolasff/phpredis/ is required for connecting to redis server"
+	},
 	"require": {
 		"php": "~5.6.0",
+        "ext-gd": "*",
+		"ext-xsl": "*",
 		"predis/predis": "^1.1"
 	},
 	"require-dev": {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8eda751ecaaae83bd9ff5f78adec4b1d",
+    "content-hash": "58d20bf076b04a12730f224e7af00ffe",
     "packages": [
         {
             "name": "predis/predis",
@@ -95,7 +95,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "~5.6.0"
+        "php": "~5.6.0",
+        "ext-gd": "*",
+        "ext-xsl": "*"
     },
     "platform-dev": []
 }
