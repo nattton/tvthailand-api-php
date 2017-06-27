@@ -376,7 +376,11 @@ class Tv2_model extends CI_Model
 	function getEpisode($showId, $start = 0)
 	{
 		$id = intval($showId);
-		$this->db->select('id, ep, title, video_encrypt, src_type, date, view_count, parts, password pwd');
+		if($this->device == 'ios') {
+			$this->db->select('id, ep, title, video_encrypt_path video_encrypt, src_type_path src_type, date, view_count, parts, password pwd');
+		} else {
+			$this->db->select('id, ep, title, video_encrypt, src_type, date, view_count, parts, password pwd');			
+		}
 		$this->db->from('episodes');
 		$this->db->where('banned',0);
 		$this->db->where('show_id', $id);
